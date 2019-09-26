@@ -578,7 +578,7 @@ export default {
       };
       this.picArr.push(picFile)
       let tempMediaList = []
-      if (this.form.mediaList = '') {
+      if (this.form.mediaList != '') {
         tempMediaList = JSON.parse(this.form.mediaList)
       }
       tempMediaList.push(picFile)

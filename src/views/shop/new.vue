@@ -65,13 +65,13 @@
 
           <el-divider content-position="left">店铺照片</el-divider>
           <el-form-item label="照片"
-                        prop="mediaList">
+                        prop="imgList">
             <el-upload :action="actionUrl"
                        list-type="picture-card"
                        :data="ossData"
                        :on-preview="handlePictureCardPreview"
-                       :on-success="handleSuccess"
                        :on-remove="handleRemove"
+                       :on-success="handleSuccess"
                        :before-upload="handleBefore"
                        :file-list="fileList">
               <i class="el-icon-plus"></i>
@@ -81,7 +81,7 @@
                    :src="dialogImageUrl"
                    alt="">
             </el-dialog>
-            <el-input v-model="form.mediaList"
+            <el-input v-model="form.imgList"
                       v-show="false"></el-input>
           </el-form-item>
 
@@ -114,9 +114,10 @@ export default {
     return {
       pageLoading: false,
       pageType: "",
+      canUpload: true,
       actionUrl: "https://www.linchongpets.com/lpCmsTest/oss/image",
       form: {
-        mediaList: "", //宠物照片
+        imgList: "", //宠物照片
         shopID: "", //商铺ID
         shopName: "", //商铺名称
         linkman: "", //联系人
@@ -131,7 +132,7 @@ export default {
       fileList: [],
       dialogImageUrl: '',
       dialogVisible: false,
-      ossData: { 'userId ':'123', 'ossZone ': 'adopt' },
+      ossData: { 'userId ':"123", 'ossZone ': 'mall' },
       addressRange: ["上海市 黄浦区", "上海市 徐汇区", "上海市 长宁区", "上海市 静安区", "上海市 普陀区", "上海市 虹口区",
         "上海市 杨浦区", "上海市 闵行区", "上海市 宝山区", "上海市 嘉定区", "上海市 浦东新区", "上海市 金山区",
         "上海市 松江区", "上海市 青浦区", "上海市 奉贤区", "上海市 崇明区"],
@@ -181,7 +182,7 @@ export default {
         this.pageLoading = false;
         console.log(res)
         this.form = JSON.parse(JSON.stringify(res))
-        // this.form.mediaList.forEach(_data => {
+        // this.form.imgList.forEach(_data => {
         //   let file = {
         //     name: '',
         //     mediaId: _data.mediaId,
@@ -196,7 +197,6 @@ export default {
       this.$refs.form.validate((valid) => {
         if (valid) {
           let formData = JSON.parse(JSON.stringify(this.form))
-          formData.imgList = [];
           this.pageLoading = true;
           if (this.pageType === "edit") {
             shopEdit(formData).then(res => {
@@ -222,14 +222,13 @@ export default {
     },
     handleRemove (file, fileList) {
       console.log(file)
-      let tempMediaList = JSON.parse(this.form.mediaList)
-      tempMediaList.forEach(picItem => {
-        debugger
+      let tempImgList = JSON.parse(this.form.imgList)
+      tempImgList.forEach(picItem => {
         if (file.mediaId == picItem.mediaId) {
           picItem.isValid = 0
         }
       })
-      this.form.mediaList = JSON.stringify(tempMediaList)
+      this.form.imgList = JSON.stringify(tempImgList)
       for (var i = 0; i < this.picArr.length; i++) {
         if (this.picArr[i].mediaId == file.mediaId) {
           this.picArr.splice(i, 1);
@@ -241,20 +240,21 @@ export default {
       this.dialogVisible = true;
     },
     handleSuccess (response, file, fileList) {
-      console.log(file)
-      this.canUpload = true
+      console.log(file);
+      this.canUpload = true;
       let picFile = {
-        mediaType: file.response.data.substring(file.response.data.indexOf('.') + 1),
-        mediaPath: file.response.data,
-        isValid: 1
+        imgName: file.response.data.split('/')[file.response.data.split('/').length -1],
+        imgUrl: file.response.data,
       };
-      this.picArr.push(picFile)
-      let tempMediaList = []
-      if (this.form.mediaList = '') {
-        tempMediaList = JSON.parse(this.form.mediaList)
+      this.picArr.push(picFile);
+      let tempImgList = [];
+      console.log(this.form.imgList)
+      if (this.form.imgList != '') {
+        tempImgList = JSON.parse(this.form.imgList)
       }
-      tempMediaList.push(picFile)
-      this.form.mediaList = JSON.stringify(tempMediaList)
+      tempImgList.push(picFile);
+      this.form.imgList = JSON.stringify(tempImgList)
+      console.log(this.form.imgList)
     },
     handleBefore () {
       if (this.picArr.length > 11) {
