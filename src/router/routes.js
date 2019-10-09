@@ -48,40 +48,6 @@ const frameIn = [
     ]
   },
   {
-    path: '/adoptRelease',
-    redirect: { name: 'index' },
-    component: layoutHeaderAside,
-    children: [
-      {
-        path: 'index',
-        name: 'adoptRelease',
-        meta: {
-          title: '领养信息列表',
-          auth: true
-        },
-        component: _import('adoptRelease/index')
-      },
-      {
-        path: 'new',
-        name: 'adoptNew',
-        meta: {
-          title: '领养信息发布',
-          auth: true
-        },
-        component: _import('adoptRelease/new')
-      },
-      {
-        path: 'check',
-        name: 'adoptCheck',
-        meta: {
-          title: '查看领养信息',
-          auth: true
-        },
-        component: _import('adoptRelease/check')
-      }
-    ]
-  },
-  {
     path: '/shop',
     redirect: { name: 'index' },
     component: layoutHeaderAside,
