@@ -155,14 +155,14 @@ export default {
     }
   },
   mounted: function () {
-    orgId = util.cookies.get("orgId")
-    if (orgId == '' || orgId == null || typeof orgId == 'undefined') {
-      this.$router.push({
-        name: 'login'
-      })
-      return
-    }
-    this.getOrgStatistic()
+    // orgId = util.cookies.get("orgId")
+    // if (orgId == '' || orgId == null || typeof orgId == 'undefined') {
+    //   this.$router.push({
+    //     name: 'login'
+    //   })
+    //   return
+    // }
+    // this.getOrgStatistic()
   }
 }
 </script>

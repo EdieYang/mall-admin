@@ -4,14 +4,14 @@ import { Message } from 'element-ui'
 import util from '@/libs/util'
 
 // 创建一个错误
-function errorCreate (msg) {
+function errorCreate(msg) {
   const error = new Error(msg)
   errorLog(error)
   throw error
 }
 
 // 记录和显示错误
-function errorLog (error) {
+function errorLog(error) {
   // 添加到日志
   store.dispatch('d2admin/log/push', {
     message: '数据请求异常',
@@ -72,18 +72,21 @@ service.interceptors.response.use(
       // 有 code 代表这是一个后端接口 可以进行进一步的判断
       switch (code) {
         case 0:
-          // [ 示例 ] code === 200 代表没有错误
           return dataAxios.data
         case 200:
           // [ 示例 ] code === 200 代表没有错误
           return dataAxios.data
-        case 'xxx':
-          // [ 示例 ] 其它和后台约定的 code
-          errorCreate(`[ code: xxx ] ${dataAxios.msg}: ${response.config.url}`)
+        case 40001:
+          //登录账户不存在
+          errorCreate(`[ code: 40001 ] ${dataAxios.message}: ${response.config.url}`)
+          break
+        case 40002:
+          // 密码错误
+          errorCreate(`[ code: 40002 ] ${dataAxios.message}: ${response.config.url}`)
           break
         default:
           // 不是正确的 code
-          errorCreate(`${dataAxios.msg}: ${response.config.url}`)
+          errorCreate(`${dataAxios.message}: ${response.config.url}`)
           break
       }
     }

@@ -1,6 +1,17 @@
 import request from '@/plugin/axios'
 
 /**
+ * 获取商铺ID
+ * @param data
+ */
+export function getShopId() {
+  return request({
+    url: '/api/shop/id',
+    method: 'get'
+  })
+}
+
+/**
  * 获取商铺列表
  * @param data
  */

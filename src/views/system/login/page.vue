@@ -2,8 +2,7 @@
   <div class="page-login">
     <div class="page-login--layer page-login--layer-area">
       <ul class="circles">
-        <li v-for="n in 10"
-            :key="n"></li>
+        <li v-for="n in 10" :key="n"></li>
       </ul>
     </div>
     <div class="page-login-layer">
@@ -12,34 +11,16 @@
         <div class="page-login-form">
           <p class="page-login-header">乐宠活</p>
           <p class="page-login-title">一站式宠物生活服务平台</p>
-          <el-form ref="loginForm"
-                   label-position="top"
-                   :rules="rules"
-                   :model="formLogin"
-                   class="login-form">
-            <el-form-item prop="username"
-                          label="账号">
-              <el-input class="form-input"
-                        type="text"
-                        size="medium"
-                        v-model="formLogin.username"
-                        placeholder="用户名">
+          <el-form ref="loginForm" label-position="top" :rules="rules" :model="formLogin" class="login-form">
+            <el-form-item prop="username" label="账号">
+              <el-input class="form-input" type="text" size="medium" v-model="formLogin.username" placeholder="用户名">
               </el-input>
             </el-form-item>
-            <el-form-item prop="password"
-                          label="密码">
-              <el-input class="form-input"
-                        type="password"
-                        size="medium"
-                        v-model="formLogin.password"
-                        :show-password="true"
-                        placeholder="密码">
+            <el-form-item prop="password" label="密码">
+              <el-input class="form-input" type="password" size="medium" v-model="formLogin.password" :show-password="true" placeholder="密码">
               </el-input>
             </el-form-item>
-            <el-button size="default"
-                       @click="submit"
-                       type="primary"
-                       class="button-login">
+            <el-button size="default"  @click="submit" type="primary" class="button-login">
               登录
             </el-button>
           </el-form>
@@ -53,9 +34,9 @@
 // import dayjs from 'dayjs'
 import { mapActions } from 'vuex'
 import util from '@/libs/util'
-import { Login } from '../../../api/login/loginApi.js'
+import { Login } from '@/api/login/loginApi.js'
 export default {
-  data () {
+  data() {
     return {
       timeInterval: null,
       // time: dayjs().format('HH:mm:ss'),
@@ -66,23 +47,12 @@ export default {
           name: 'Admin',
           username: 'admin',
           password: 'admin'
-        },
-        {
-          name: 'Editor',
-          username: 'editor',
-          password: 'editor'
-        },
-        {
-          name: 'User1',
-          username: 'user1',
-          password: 'user1'
         }
       ],
       // 表单
       formLogin: {
         username: '',
-        password: '',
-        code: 'v9am'
+        password: ''
       },
       // 表单校验
       rules: {
@@ -99,21 +69,14 @@ export default {
             message: '请输入密码',
             trigger: 'blur'
           }
-        ],
-        code: [
-          {
-            required: true,
-            message: '请输入验证码',
-            trigger: 'blur'
-          }
         ]
       }
     }
   },
-  mounted () {
+  mounted() {
 
   },
-  beforeDestroy () {
+  beforeDestroy() {
 
   },
   methods: {
@@ -124,7 +87,7 @@ export default {
      * @description 接收选择一个用户快速登录的事件
      * @param {Object} user 用户信息
      */
-    handleUserBtnClick (user) {
+    handleUserBtnClick(user) {
       this.formLogin.username = user.username;
       this.formLogin.password = user.password;
       this.submit()
@@ -133,20 +96,20 @@ export default {
      * @description 提交表单
      */
     // 提交登录信息
-    submit () {
+    submit() {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
           // 登录
           // 注意 这里的演示没有传验证码
           // 具体需要传递的数据请自行修改代码
           let userInfo = {
-            "userAcc": this.formLogin.username,
+            "userAccount": this.formLogin.username,
             "password": this.$md5(this.formLogin.password)
           };
+          console.log(this.$md5(this.formLogin.password))
           Login(userInfo).then(res => {
             console.log(res);
             util.cookies.set('userId', res.userId);
-            util.cookies.set('orgId', res.orgId);
             this.$router.push('/shop/index')
           });
         } else {
@@ -210,6 +173,7 @@ export default {
   width: 300px;
   margin-top: 30px;
   font-size: 22px;
+  box-shadow:-4px -4px 10px #eaeaea;
 }
 
 .page-login {
@@ -223,7 +187,8 @@ export default {
   background-size: auto 100%;
   position: relative;
   font-family: PingFangSC-Regular, San Francisco;
-
+  min-width: 1200px;
+  min-height: 800px;
   // 背景
   .circles {
     position: absolute;

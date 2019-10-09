@@ -54,21 +54,46 @@ const frameIn = [
     children: [
       {
         path: 'index',
-        name: 'shop',
+        name: 'shopList',
         meta: {
-          title: '商铺管理',
+          title: '商家管理',
           auth: true
         },
         component: _import('shop/index')
       },
       {
         path: 'new',
-        name: 'shop',
+        name: 'shopDetail',
         meta: {
-          title: '商铺信息',
+          title: '商家信息',
           auth: true
         },
         component: _import('shop/new')
+      }
+    ]
+  },
+  {
+    path: '/commodity',
+    redirect: { name: 'index' },
+    component: layoutHeaderAside,
+    children: [
+      {
+        path: 'index',
+        name: 'commodityList',
+        meta: {
+          title: '商品管理',
+          auth: true
+        },
+        component: _import('commodity/index')
+      },
+      {
+        path: 'new',
+        name: 'commodityDetail',
+        meta: {
+          title: '商品信息',
+          auth: true
+        },
+        component: _import('commodity/new')
       }
     ]
   }

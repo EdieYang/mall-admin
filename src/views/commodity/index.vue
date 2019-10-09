@@ -24,13 +24,13 @@
             <span>{{ scope.row.shopId }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="商户名称" align="center" prop="shopName">
+        <el-table-column label="商品编号" align="center" prop="commodityId">
           <template slot-scope="scope">
-            <span>{{ scope.row.shopName }}</span>
+            <span>{{ scope.row.commodityId }}</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="电话" align="center" width="130" prop="mobile">
+        <el-table-column label="商品状态"" align="center" width="130" prop="mobile">
           <template slot-scope="scope">
             <span>{{ scope.row.mobile }}</span>
           </template>
@@ -96,7 +96,7 @@ var pageSize = 10
 var userId = ''
 
 export default {
-  name: "shopList",
+  name: "commodityList",
   data() {
     return {
       data: [],
