@@ -1,9 +1,22 @@
 // 菜单 顶栏
 export default [
   { path: '/index', title: '首页', icon: 'home' },
-  { path: '/shop/index', title: '商家管理', icon: 'address-book-o' },
   {
-    path: '', title: '商品管理', icon: 'shopping-bag',
+    path: '/shop',
+    title: '商户管理',
+    icon: 'address-book-o',
+    children: [
+      {
+        path: '/shop/index',
+        title: '商家列表',
+        icon: ''
+      }
+    ]
+  },
+  {
+    path: '',
+    title: '商品管理',
+    icon: 'shopping-bag',
     children: [
       {
         path: '/commodity/index',

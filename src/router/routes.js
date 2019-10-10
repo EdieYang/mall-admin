@@ -56,7 +56,7 @@ const frameIn = [
         path: 'index',
         name: 'shopList',
         meta: {
-          title: '商家管理',
+          title: '商家列表',
           auth: true
         },
         component: _import('shop/index')
