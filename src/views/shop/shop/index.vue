@@ -13,16 +13,6 @@
             <el-input v-model="formInline.shopName"
                       size="small"></el-input>
           </el-form-item>
-          <el-form-item label="商户类型">
-            <el-select v-model="formInline.shopType"
-                       placeholder="请选择">
-              <el-option v-for="item in shopTypeEnum"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
           <el-form-item>
             <el-button type="primary"
                        round=""
@@ -53,7 +43,7 @@
             <span>{{ scope.row.shopId }}</span>
           </template>
         </el-table-column>
-        <el-table-column label="商户名称"
+        <el-table-column label="商家"
                          align="center"
                          prop="shopName">
           <template slot-scope="scope">
@@ -79,22 +69,6 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="商品数量"
-                         align="center"
-                         width="120">
-          <template slot-scope="scope">
-            <span>0</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="店员数量"
-                         align="center"
-                         width="120">
-          <template slot-scope="scope">
-            <span>0</span>
-          </template>
-        </el-table-column>
-
         <el-table-column label="商户状态"
                          align="center"
                          width="180"
@@ -106,12 +80,36 @@
                     v-if="scope.row.shopStatus==1">运营中</el-tag>
           </template>
         </el-table-column>
-
+        <el-table-column label="创建时间"
+                         align="center"
+                         width="180"
+                         prop="shopStatus">
+          <template slot-scope="scope">
+            <span>{{ scope.row.createDate }}</span>
+          </template>
+        </el-table-column>
         <el-table-column label="操作"
                          align="center"
                          width="180"
                          fixed="right">
           <template slot-scope="scope">
+            <el-tooltip content="扫码绑定管理员"
+                        placement="top-start"
+                        effect="light">
+              <el-button type="warning"
+                         icon="el-icon-data-line"
+                         circle
+                         @click="run(scope.row.shopId,'1')"></el-button>
+            </el-tooltip>
+            <el-tooltip content="管理员"
+                        placement="top-start"
+                        circle
+                        effect="light">
+              <el-button type="success"
+                         icon="el-icon-user"
+                         circle
+                         @click="switchline(scope.row.shopId,'3')"></el-button>
+            </el-tooltip>
             <el-tooltip content="编辑商铺"
                         placement="top-start"
                         effect="light">
@@ -119,33 +117,6 @@
                          icon="el-icon-edit"
                          circle
                          @click="edit(scope.row.shopId)"></el-button>
-            </el-tooltip>
-            <el-tooltip content="编辑店员"
-                        placement="top-start"
-                        circle
-                        effect="light">
-              <el-button type="primary"
-                         icon="el-icon-user"
-                         circle
-                         @click="switchline(scope.row.shopId,'3')"></el-button>
-            </el-tooltip>
-            <el-tooltip content="激活"
-                        placement="top-start"
-                        effect="light"
-                        v-if="scope.row.shopStatus==='0'">
-              <el-button type="danger"
-                         icon="el-icon-video-pause"
-                         circle
-                         @click="run(scope.row.shopId,'1')"></el-button>
-            </el-tooltip>
-            <el-tooltip content="停止"
-                        placement="top-start"
-                        effect="light"
-                        v-if="scope.row.shopStatus==='1'">
-              <el-button type="danger"
-                         icon="el-icon-video-play"
-                         circle
-                         @click="run(scope.row.shopId,'0')"></el-button>
             </el-tooltip>
           </template>
         </el-table-column>
@@ -218,10 +189,10 @@ export default {
       });
     },
     newShop () {
-      this.$router.push({ path: '/shop/new', query: { type: "new" } })
+      this.$router.push({ path: '/shop/shop/new', query: { type: "new" } })
     },
     edit (shopId) {
-      this.$router.push({ path: '/shop/new', query: { shopId: shopId, type: "edit" } });
+      this.$router.push({ path: '/shop/shop/new', query: { shopId: shopId, type: "edit" } });
     },
     handleSizeChange (val) {
       pageSize = val

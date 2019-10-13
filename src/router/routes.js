@@ -53,22 +53,31 @@ const frameIn = [
     component: layoutHeaderAside,
     children: [
       {
-        path: 'index',
+        path: 'shop/index',
         name: 'shopList',
         meta: {
           title: '商家列表',
           auth: true
         },
-        component: _import('shop/index')
+        component: _import('shop/shop/index')
       },
       {
-        path: 'new',
+        path: 'shop/new',
         name: 'shopDetail',
         meta: {
           title: '商家信息',
           auth: true
         },
-        component: _import('shop/new')
+        component: _import('shop/shop/new')
+      },
+      {
+        path: 'businessArea/index',
+        name: 'businessAreaList',
+        meta: {
+          title: '商圈信息',
+          auth: true
+        },
+        component: _import('shop/businessArea/index')
       }
     ]
   },

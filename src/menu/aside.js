@@ -7,8 +7,13 @@ export default [
     icon: 'address-book-o',
     children: [
       {
-        path: '/shop/index',
+        path: '/shop/shop/index',
         title: '商家列表',
+        icon: ''
+      },
+      {
+        path: '/shop/businessArea/index',
+        title: '商圈列表',
         icon: ''
       }
     ]
