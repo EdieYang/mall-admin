@@ -78,6 +78,24 @@ const frameIn = [
           auth: true
         },
         component: _import('shop/businessArea/index')
+      },
+      {
+        path: 'shopSysUser/shopIndex',
+        name: 'shopSysUserList',
+        meta: {
+          title: '商家管理员信息',
+          auth: true
+        },
+        component: _import('shop/shopSysUser/shopIndex')
+      },
+      {
+        path: 'shopSysUser/index',
+        name: 'shopsSysUserList',
+        meta: {
+          title: '商家管理员列表',
+          auth: true
+        },
+        component: _import('shop/shopSysUser/index')
       }
     ]
   },

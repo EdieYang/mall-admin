@@ -15,6 +15,11 @@ export default [
         path: '/shop/businessArea/index',
         title: '商圈列表',
         icon: ''
+      },
+      {
+        path: '/shop/shopSysUser/index',
+        title: '商家管理员列表',
+        icon: ''
       }
     ]
   },
