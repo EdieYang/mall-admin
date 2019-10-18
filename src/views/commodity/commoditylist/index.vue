@@ -2,13 +2,38 @@
   <d2-container>
     <template slot="header">
       <div class="header-cover">
-        <el-form :inline="true" :model="formInline" class="demo-form-inline">
-          <el-form-item label="商户编号">
-            <el-input v-model="formInline.shopId" size="small"></el-input>
-          </el-form-item>
-          <el-form-item label="商户名称">
-            <el-input v-model="formInline.shopName" size="small"></el-input>
-          </el-form-item>
+        <el-form :inline="true" :model="formInline" class="comm-form-inline">
+          <el-row>
+
+            <el-form-item label="商品名称" label-width="100px">
+              <el-input v-model="formInline.commodityName" size="small"></el-input>
+            </el-form-item>
+
+            <el-form-item label="商品ID" label-width="100px">
+              <el-input v-model="formInline.commodityId" size="small"></el-input>
+            </el-form-item>
+
+            <el-form-item label="商家名称" label-width="100px">
+              <el-input v-model="formInline.shopName" size="small"></el-input>
+            </el-form-item>
+
+            <el-form-item label="是否上架" label-width="100px">
+              <el-select v-model="formInline.commodityStatus" placeholder="请选择" size="small">
+                <el-option v-for="item in commodityStatusOptions" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+
+          </el-row>
+
+          <el-row>
+            <el-form-item label="模式" label-width="100px">
+              <el-select v-model="formInline.commodityPattern" placeholder="请选择" size="small">
+                <el-option v-for="item in commodityPatternOptions" :key="item.value" :label="item.label" :value="item.value">
+                </el-option>
+              </el-select>
+            </el-form-item>
+          </el-row>
           <el-form-item>
             <el-button type="primary" round="" size="small" @click="search">查询</el-button>
             <el-button type="" round="" size="small" @click="reset">重置</el-button>
@@ -30,7 +55,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="商品状态"" align="center" width="130" prop="mobile">
+        <el-table-column label="商品状态" align=" center" width="130" prop="mobile">
           <template slot-scope="scope">
             <span>{{ scope.row.mobile }}</span>
           </template>
@@ -42,13 +67,13 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="商品数量" align="center" width="120">
+        <el-table-column label="商品数量" align="center" width="100">
           <template slot-scope="scope">
             <span>0</span>
           </template>
         </el-table-column>
 
-        <el-table-column label="店员数量" align="center" width="120">
+        <el-table-column label="店员数量" align="center" width="100">
           <template slot-scope="scope">
             <span>0</span>
           </template>
@@ -106,7 +131,24 @@ export default {
       formInline: {
         shopId: '',
         shopName: ''
-      }
+      },
+      commodityStatusOptions: [{
+        value: '0',
+        label: '上架'
+      }, {
+        value: '1',
+        label: '下架'
+      }],
+      commodityPatternOptions: [{
+        value: '0',
+        label: '线上核销'
+      }, {
+        value: '1',
+        label: '线下物流'
+      }, {
+        value: '2',
+        label: '线下物流+自提'
+      }]
     }
   },
   mounted() {

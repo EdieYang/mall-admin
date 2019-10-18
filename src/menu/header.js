@@ -24,7 +24,7 @@ export default [
     icon: 'shopping-bag',
     children: [
       {
-        path: '/commodity/index',
+        path: '/commodity/commoditylist/index',
         title: '商品列表',
         icon: ''
       }

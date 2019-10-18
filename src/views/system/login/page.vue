@@ -9,8 +9,8 @@
       <div class="login-layer-container">
         <!-- form -->
         <div class="page-login-form">
-          <p class="page-login-header">乐宠活</p>
-          <p class="page-login-title">一站式宠物生活服务平台</p>
+          <p class="page-login-header">linkpets-mall</p>
+          <p class="page-login-title">邻宠好物分销平台</p>
           <el-form ref="loginForm" label-position="top" :rules="rules" :model="formLogin" class="login-form">
             <el-form-item prop="username" label="账号">
               <el-input class="form-input" type="text" size="medium" v-model="formLogin.username" placeholder="用户名">
@@ -110,7 +110,7 @@ export default {
           Login(userInfo).then(res => {
             console.log(res);
             util.cookies.set('userId', res.userId);
-            this.$router.push('/shop/index')
+            this.$router.push('/index')
           });
         } else {
           // 登录表单校验失败

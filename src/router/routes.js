@@ -105,22 +105,22 @@ const frameIn = [
     component: layoutHeaderAside,
     children: [
       {
-        path: 'index',
+        path: 'commoditylist/index',
         name: 'commodityList',
         meta: {
-          title: '商品管理',
+          title: '商品列表',
           auth: true
         },
-        component: _import('commodity/index')
+        component: _import('commodity/commoditylist/index')
       },
       {
         path: 'new',
-        name: 'commodityDetail',
+        name: 'commoditylist/new',
         meta: {
           title: '商品信息',
           auth: true
         },
-        component: _import('commodity/new')
+        component: _import('commodity/commoditylist/new')
       }
     ]
   }
