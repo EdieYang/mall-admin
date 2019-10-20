@@ -114,8 +114,8 @@ const frameIn = [
         component: _import('commodity/commoditylist/index')
       },
       {
-        path: 'new',
-        name: 'commoditylist/new',
+        path: 'commoditylist/new',
+        name: 'commodityDetail',
         meta: {
           title: '商品信息',
           auth: true

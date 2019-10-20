@@ -16,11 +16,13 @@ import router from './router'
 import menuHeader from '@/menu/header'
 import menuAside from '@/menu/aside'
 import { frameInRoutes } from '@/router/routes'
+import VueUeditorWrap from 'vue-ueditor-wrap'
 
 // 核心插件
 Vue.use(d2Admin)
 // 表格
 Vue.use(D2Crud)
+Vue.component('vue-ueditor-wrap', VueUeditorWrap)
 
 // MD5加密
 Vue.prototype.$md5 = md5
