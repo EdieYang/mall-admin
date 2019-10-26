@@ -163,6 +163,7 @@
                               prop="marketPrice">
                   <el-col :span="9">
                     <el-input v-model="form.marketPrice"
+                              @change="handleMarketPriceChange"
                               placeholder="保留2位小数"
                               type="number"
                               step="0.01"
@@ -174,6 +175,7 @@
                               prop="sellingPrice">
                   <el-col :span="9">
                     <el-input v-model="form.sellingPrice"
+                              @change="handleSellingPriceChange"
                               placeholder="保留2位小数"
                               type="number"
                               step="0.01"
@@ -212,9 +214,10 @@
                                inactive-text="关闭">
                     </el-switch>
                   </el-col>
-                  <el-col :span="4"
+                  <el-col :span="8"
                           v-if="stockWarnBoolean">
                     <el-input v-model="form.stockWarn"
+                              @change="handelStockWarnChange"
                               placeholder="请输入库存预警值"
                               type="number"
                               step="1"
@@ -319,7 +322,7 @@
                                   end-placeholder="结束日期">
                   </el-date-picker>
                 </el-form-item>
-                <el-form-item label="自定义核销时间"
+                <el-form-item label="核销天数"
                               prop="verificationDate"
                               v-if="form.verificationType==='1'">
                   <el-col :span="8">
@@ -834,16 +837,19 @@ export default {
           { required: true, message: '请输入商品使用须知', trigger: 'blur' }
         ],
         marketPrice: [
-          { required: true, message: '请输入商品市场价' },
-          { type: 'number', message: '市场价必须为数字' }
+          { required: true, message: '请输入有效商品市场价' },
         ],
         sellingPrice: [
-          { required: true, message: '请输入商品售价' },
-          { type: 'number', message: '售价必须为数字' }
+          { required: true, message: '请输入有效商品售价' },
         ],
         purchasePrice: [
-          { required: true, message: '请输入商品结算价' },
-          { type: 'number', message: '结算价必须为数字' }
+          { required: true, message: '请输入有效商品结算价' },
+        ],
+        stock: [
+          { required: true, message: '请填写商品库存' },
+        ],
+        stockWarn: [
+          { required: true, message: '请填写有效库存预计值' },
         ],
         shopId: [
           { required: true, message: '请输入商家' }
@@ -1086,6 +1092,31 @@ export default {
     handleBefore () {
 
     },
+    handleMarketPriceChange (value) {
+      this.form.marketPrice = this.clearNoNum(value)
+    },
+    handleSellingPriceChange (value) {
+      this.form.sellingPrice = this.clearNoNum(value)
+    },
+    handelStockWarnChange (value) {
+      this.form.stockWarn = this.clearNoPositiveNum(value)
+    },
+    clearNoNum (value) {
+      value = value.replace(/[^\d.]/g, "");  //清除“数字”和“.”以外的字符   
+      value = value.replace(/\.{2,}/g, "."); //只保留第一个. 清除多余的   
+      value = value.replace(".", "$#$").replace(/\./g, "").replace("$#$", ".");
+      value = value.replace(/^(\-)*(\d+)\.(\d\d).*$/, '$1$2.$3');//只能输入两个小数   
+      if (value.indexOf(".") < 0 && value != "" || value.indexOf(".") == 0) {//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额  
+        value = parseFloat(value);
+      }
+      return value;
+    },
+    clearNoPositiveNum (value) {
+      if (parseInt(value) + "" !== value) {
+        value = parseInt(value)
+      }
+      return value;
+    }
   }
 }
 </script>
