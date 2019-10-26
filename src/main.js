@@ -10,7 +10,8 @@ import store from '@/store/index'
 import D2Crud from '@d2-projects/d2-crud'
 // MD5加密
 import md5 from 'js-md5'
-
+// 时间格式转换
+import moment from 'moment'
 // 菜单和路由设置
 import router from './router'
 import menuHeader from '@/menu/header'
@@ -26,6 +27,7 @@ Vue.component('vue-ueditor-wrap', VueUeditorWrap)
 
 // MD5加密
 Vue.prototype.$md5 = md5
+Vue.prototype.$moment = moment
 
 new Vue({
   router,

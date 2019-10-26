@@ -13,7 +13,7 @@
                    description="预览无误才可提交审核"></el-step>
         </el-steps>
         <div v-show="step===1">
-          <el-form ref="form"
+          <el-form ref="form1"
                    :model="form"
                    label-width="110px"
                    label-position="left"
@@ -58,7 +58,7 @@
                    style="margin-top:50px;">
             <el-tab-pane label="基础设置"
                          name="defaultSetting">
-              <el-form ref="form"
+              <el-form ref="form2"
                        :model="form"
                        label-width="110px"
                        label-position="left"
@@ -67,18 +67,18 @@
 
                 <el-form-item label="商品名称"
                               prop="commodityName">
-                  <el-input v-model="form.commodityName"></el-input>
+                  <el-input v-model="form.commodityName"
+                            placeholder="请输入商品名称"></el-input>
                 </el-form-item>
                 <el-form-item label="商品图片"
                               prop="commodityImages">
                   <el-upload :action="actionUrl"
                              list-type="picture-card"
-                             :data="ossData"
+                             :data="commodityImgOssParam"
                              :on-preview="handlePictureCardPreview"
-                             :on-remove="handleRemove"
-                             :on-success="handleSuccess"
-                             :before-upload="handleBefore"
-                             :file-list="fileList">
+                             :on-remove="handleCommodityImageRemove"
+                             :on-success="handleCommodityImageSuccess"
+                             :before-upload="handleBefore">
                     <i class="el-icon-plus"></i>
                   </el-upload>
                   <el-dialog :visible.sync="dialogVisible"
@@ -90,14 +90,15 @@
                 </el-form-item>
 
                 <el-form-item label="商品展示图片"
-                              prop="displayImage">
+                              prop="commodityDisplayImg">
                   <el-upload :action="actionUrl"
                              list-type="picture-card"
-                             :data="ossData"
+                             :data="commodityImgOssParam"
                              :on-preview="handlePictureCardPreview"
-                             :on-remove="handleRemove"
-                             :on-success="handleSuccess"
-                             :before-upload="handleBefore">
+                             :on-remove="handleDisplayRemove"
+                             :on-success="handleDisplaySuccess"
+                             :before-upload="handleBefore"
+                             :limit="1">
                     <i class="el-icon-plus"></i>
                   </el-upload>
                   <el-dialog :visible.sync="dialogVisible"
@@ -111,6 +112,7 @@
                               prop="saleDate">
                   <el-date-picker v-model="form.saleDate"
                                   type="datetimerange"
+                                  value-format="yyyy-MM-dd HH:mm:ss"
                                   range-separator="至"
                                   start-placeholder="开始日期"
                                   end-placeholder="结束日期">
@@ -150,7 +152,7 @@
             <el-tab-pane label="价格/库存"
                          name="stockSetting">
 
-              <el-form ref="form"
+              <el-form ref="form3"
                        :model="form"
                        label-width="110px"
                        label-position="left"
@@ -159,30 +161,46 @@
 
                 <el-form-item label="市场价"
                               prop="marketPrice">
-                  <el-col :span="8">
-                    <el-input v-model="form.marketPrice">
+                  <el-col :span="9">
+                    <el-input v-model="form.marketPrice"
+                              placeholder="保留2位小数"
+                              type="number"
+                              step="0.01"
+                              min="0">
                       <template slot="append">元</template></el-input>
                   </el-col>
                 </el-form-item>
                 <el-form-item label="平台售价"
                               prop="sellingPrice">
-                  <el-col :span="8">
-                    <el-input v-model="form.sellingPrice">
+                  <el-col :span="9">
+                    <el-input v-model="form.sellingPrice"
+                              placeholder="保留2位小数"
+                              type="number"
+                              step="0.01"
+                              min="0">
                       <template slot="append">元</template></el-input>
                   </el-col>
                 </el-form-item>
                 <el-form-item label="商家结算价"
                               prop="purchasePrice">
-                  <el-col :span="8">
-                    <el-input v-model="form.purchasePrice">
+                  <el-col :span="9">
+                    <el-input v-model="form.purchasePrice"
+                              placeholder="保留2位小数"
+                              type="number"
+                              step="0.01"
+                              min="0">
                       <template slot="append">元</template></el-input>
                   </el-col>
                 </el-form-item>
                 <el-divider content-position="left">库存设置</el-divider>
                 <el-form-item label="库存"
-                              prop="purchasePrice">
+                              prop="stock">
                   <el-col :span="8">
-                    <el-input v-model="form.stock">
+                    <el-input v-model="form.stock"
+                              placeholder="请输入库存"
+                              type="number"
+                              step="1"
+                              min="0">
                     </el-input>
                   </el-col>
                 </el-form-item>
@@ -196,21 +214,31 @@
                   </el-col>
                   <el-col :span="4"
                           v-if="stockWarnBoolean">
-                    <el-input v-model="form.stockWarn">
+                    <el-input v-model="form.stockWarn"
+                              placeholder="请输入库存预警值"
+                              type="number"
+                              step="1"
+                              min="0">
                     </el-input>
                   </el-col>
                 </el-form-item>
                 <el-form-item label="基础销量"
                               prop="saleCount">
                   <el-col :span="8">
-                    <el-input v-model="form.saleCount">
+                    <el-input v-model="form.saleCount"
+                              placeholder="请输入基础销量"
+                              type="number"
+                              step="1">
                     </el-input>
                   </el-col>
                 </el-form-item>
                 <el-form-item label="基础浏览量"
                               prop="browseCount">
                   <el-col :span="8">
-                    <el-input v-model="form.browseCount">
+                    <el-input v-model="form.browseCount"
+                              placeholder="请输入基础浏览量"
+                              type="number"
+                              step="1">
                     </el-input>
                   </el-col>
                 </el-form-item>
@@ -250,8 +278,7 @@
             </el-tab-pane>
             <el-tab-pane label="核销设置"
                          name="verificationSetting">
-
-              <el-form ref="form"
+              <el-form ref="form4"
                        :model="form"
                        label-width="110px"
                        label-position="left"
@@ -264,7 +291,7 @@
                     <el-select v-model="form.shopId"
                                multiple
                                filterable
-                               placeholder="请选择"
+                               placeholder="请选择商品所属的商家"
                                style="width:100%">
                       <el-option v-for="item in options"
                                  :key="item.value"
@@ -286,6 +313,7 @@
                               v-if="form.verificationType==='0'">
                   <el-date-picker v-model="form.verificationDate"
                                   type="datetimerange"
+                                  value-format="yyyy-MM-dd HH:mm:ss"
                                   range-separator="至"
                                   start-placeholder="开始日期"
                                   end-placeholder="结束日期">
@@ -302,7 +330,11 @@
                 <el-form-item label="限购数量"
                               prop="purchaseLimit">
                   <el-col :span="8">
-                    <el-input v-model="form.purchaseLimit">
+                    <el-input v-model="form.purchaseLimit"
+                              placeholder="请输入限购数量"
+                              type="number"
+                              step="1"
+                              min="0">
                     </el-input>
                   </el-col>
                 </el-form-item>
@@ -322,6 +354,7 @@
             </el-tab-pane>
             <el-tab-pane label="商品详情"
                          name="commodityDetailSetting">
+              <p class="s-warning ">录入商品详情，如果是HTML代码，请先点击左上角HTML按钮后再粘贴</p>
               <el-row>
                 <el-col :span="12">
                   <d2-ueditor v-model="form.commodityDetail"
@@ -342,7 +375,7 @@
             </el-tab-pane>
             <el-tab-pane label="客服/社群"
                          name="customerServiceSetting">
-              <el-form ref="form"
+              <el-form ref="form5"
                        :model="form"
                        label-width="110px"
                        label-position="left"
@@ -352,7 +385,8 @@
                 <el-form-item label="客服联系方式"
                               prop="csContact">
                   <el-col :span="8">
-                    <el-input v-model="form.csContact">
+                    <el-input v-model="form.csContact"
+                              placeholder="请输入客服联系方式">
                     </el-input>
                   </el-col>
                 </el-form-item>
@@ -361,10 +395,10 @@
                               prop="csWxcode">
                   <el-upload :action="actionUrl"
                              list-type="picture-card"
-                             :data="ossData"
+                             :data="csOssParam"
                              :on-preview="handlePictureCardPreview"
-                             :on-remove="handleRemove"
-                             :on-success="handleSuccess"
+                             :on-remove="handleCsWxcodeRemove"
+                             :on-success="handleCsWxcodeSuccess"
                              :before-upload="handleBefore">
                     <i class="el-icon-plus"></i>
                   </el-upload>
@@ -392,7 +426,7 @@
             </el-tab-pane>
             <el-tab-pane label="分享设置"
                          name="shareSetting">
-              <el-form ref="form"
+              <el-form ref="form6"
                        :model="form"
                        label-width="110px"
                        label-position="left"
@@ -402,14 +436,16 @@
                 <el-form-item label="分享标题"
                               prop="shareTitle">
                   <el-col :span="24">
-                    <el-input v-model="form.shareTitle">
+                    <el-input v-model="form.shareTitle"
+                              placeholder="请输入分享标题">
                     </el-input>
                   </el-col>
                 </el-form-item>
                 <el-form-item label="分享详情"
                               prop="shareInfo">
                   <el-col :span="24">
-                    <el-input v-model="form.shareInfo">
+                    <el-input v-model="form.shareInfo"
+                              placeholder="请输入分享详情">
                     </el-input>
                   </el-col>
                 </el-form-item>
@@ -417,10 +453,10 @@
                               prop="shareWapImg">
                   <el-upload :action="actionUrl"
                              list-type="picture-card"
-                             :data="ossData"
+                             :data="shareOssParam"
                              :on-preview="handlePictureCardPreview"
-                             :on-remove="handleRemove"
-                             :on-success="handleSuccess"
+                             :on-remove="handleShareWapImgRemove"
+                             :on-success="handleShareWapImgSuccess"
                              :before-upload="handleBefore">
                     <i class="el-icon-plus"></i>
                   </el-upload>
@@ -435,10 +471,10 @@
                               prop="shareMiniImg">
                   <el-upload :action="actionUrl"
                              list-type="picture-card"
-                             :data="ossData"
+                             :data="shareOssParam"
                              :on-preview="handlePictureCardPreview"
-                             :on-remove="handleRemove"
-                             :on-success="handleSuccess"
+                             :on-remove="handleShareMiniImgRemove"
+                             :on-success="handleShareMiniImgSuccess"
                              :before-upload="handleBefore">
                     <i class="el-icon-plus"></i>
                   </el-upload>
@@ -453,10 +489,10 @@
                               prop="sharePost">
                   <el-upload :action="actionUrl"
                              list-type="picture-card"
-                             :data="ossData"
+                             :data="shareOssParam"
                              :on-preview="handlePictureCardPreview"
-                             :on-remove="handleRemove"
-                             :on-success="handleSuccess"
+                             :on-remove="handleSharePostRemove"
+                             :on-success="handleSharePostSuccess"
                              :before-upload="handleBefore">
                     <i class="el-icon-plus"></i>
                   </el-upload>
@@ -482,7 +518,7 @@
             </el-tab-pane>
             <el-tab-pane label="积分设置"
                          name="pointSetting">
-              <el-form ref="form"
+              <el-form ref="form7"
                        :model="form"
                        label-width="110px"
                        label-position="left"
@@ -492,7 +528,10 @@
                 <el-form-item label="购买所得积分"
                               prop="purchasePoints">
                   <el-col :span="12">
-                    <el-input v-model="form.purchasePoints">
+                    <el-input v-model="form.purchasePoints"
+                              placeholder="请输入积分"
+                              type="number"
+                              step="1">
                     </el-input>
                   </el-col>
                 </el-form-item>
@@ -502,7 +541,7 @@
             <el-tab-pane label="分销设置"
                          name="distributeSetting"
                          v-if="form.distributed">
-              <el-form ref="form"
+              <el-form ref="form8"
                        :model="form"
                        label-width="160px"
                        label-position="left"
@@ -512,7 +551,11 @@
                 <el-form-item label="Lv1分销佣金比例(%)"
                               prop="commissionLevelOne">
                   <el-col :span="4">
-                    <el-input v-model="form.commissionLevelOne">
+                    <el-input v-model="form.commissionLevelOne"
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              max="100">
                     </el-input>
                   </el-col>
                   <el-col :span="12"
@@ -524,7 +567,11 @@
                 <el-form-item label="Lv2分销佣金比例(%)"
                               prop="commissionLevelTwo">
                   <el-col :span="4">
-                    <el-input v-model="form.commissionLevelTwo">
+                    <el-input v-model="form.commissionLevelTwo"
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              max="100">
                     </el-input>
                   </el-col>
                   <el-col :span="12"
@@ -536,7 +583,11 @@
                 <el-form-item label="Lv3分销佣金比例(%)"
                               prop="commissionLevelThree">
                   <el-col :span="4">
-                    <el-input v-model="form.commissionLevelThree">
+                    <el-input v-model="form.commissionLevelThree"
+                              type="number"
+                              step="0.01"
+                              min="0"
+                              max="100">
                     </el-input>
                   </el-col>
                   <el-col :span="12"
@@ -551,7 +602,7 @@
             <el-tab-pane label="多属性设置"
                          name="multiSpecSetting"
                          v-if="form.multiSpec">
-              <el-form ref="form"
+              <el-form ref="form9"
                        :model="form"
                        label-width="160px"
                        label-position="left"
@@ -560,7 +611,6 @@
                        style="width:100%;">
                 <el-form-item label="商品规格"
                               prop="commoditySpec">
-
                   <el-row>
                     <el-col :span="8">商品属性名</el-col>
                     <el-col :span="3">市场价格</el-col>
@@ -569,60 +619,52 @@
                     <el-col :span="3">库存</el-col>
                     <el-col :span="4">操作</el-col>
                   </el-row>
-                  <el-row class="inputSpecRow">
+                  <el-row class="inputSpecRow"
+                          v-for="(item,index) in form.specList"
+                          v-bind:key="index">
                     <el-col :span="8">
-                      <el-input v-model="form.specName"
+                      <el-input v-model="item.specName"
+                                placeholder="请输入商品属性名"
                                 style="width:90%;"></el-input>
                     </el-col>
                     <el-col :span="3">
-                      <el-input v-model="form.marketPrice"
+                      <el-input v-model="item.marketPrice"
+                                type="number"
+                                step="0.01"
+                                min="0"
                                 style="width:80%;"></el-input>
                     </el-col>
                     <el-col :span="3">
-                      <el-input v-model="form.purchasePrice"
+                      <el-input v-model="item.purchasePrice"
+                                type="number"
+                                step="0.01"
+                                min="0"
                                 style="width:80%;"></el-input>
                     </el-col>
                     <el-col :span="3">
-                      <el-input v-model="form.sellingPrice"
+                      <el-input v-model="item.sellingPrice"
+                                type="number"
+                                step="0.01"
+                                min="0"
                                 style="width:80%;"></el-input>
                     </el-col>
                     <el-col :span="3">
-                      <el-input v-model="form.stock"
+                      <el-input v-model="item.stock"
+                                type="number"
+                                step="1"
+                                min="0"
                                 style="width:80%;"></el-input>
                     </el-col>
-                    <el-col :span="4">
+                    <el-col :span="4"
+                            v-if='index!==0'>
                       <el-button type="danger"
-                                 size="small">删除</el-button>
-                    </el-col>
-                  </el-row>
-                  <el-row class="inputSpecRow">
-                    <el-col :span="8">
-                      <el-input v-model="form.specName"
-                                style="width:90%;"></el-input>
-                    </el-col>
-                    <el-col :span="3">
-                      <el-input v-model="form.marketPrice"
-                                style="width:80%;"></el-input>
-                    </el-col>
-                    <el-col :span="3">
-                      <el-input v-model="form.purchasePrice"
-                                style="width:80%;"></el-input>
-                    </el-col>
-                    <el-col :span="3">
-                      <el-input v-model="form.sellingPrice"
-                                style="width:80%;"></el-input>
-                    </el-col>
-                    <el-col :span="3">
-                      <el-input v-model="form.stock"
-                                style="width:80%;"></el-input>
-                    </el-col>
-                    <el-col :span="4">
-                      <el-button type="danger"
-                                 size="small">删除</el-button>
+                                 size="small"
+                                 @click="delSpec(index)">删除</el-button>
                     </el-col>
                   </el-row>
                   <el-button type="primary"
-                             size="small">添加属性</el-button>
+                             size="small"
+                             @click="addSpec">添加属性</el-button>
                 </el-form-item>
               </el-form>
             </el-tab-pane>
@@ -649,7 +691,8 @@
       <el-button type="danger"
                  round
                  size="large"
-                 @click="nextStep"
+                 @click="uploadCommodity"
+                 :loading="loading"
                  v-if="step===2">保存商品信息并预览<i class="el-icon-arrow-right el-icon--right"></i></el-button>
     </template>
   </d2-container>
@@ -664,28 +707,32 @@ var shopId = ''
 export default {
   name: "commodityDetail",
   data () {
-    let validMobile = (rule, value, callback) => {
-      let reg = /^1(3|4|5|7|8)\d{9}$/;
-      if (!reg.test(value)) {
-        callback(new Error('请输入正确的手机号'));
-      } else {
-        callback();
-      }
-    };
     return {
+      loading: false,
       pageLoading: false,
       pageType: "",
       canUpload: true,
       picPath: 'https://pic.linchongpets.com/',
-      actionUrl: "https://www.linchongpets.com/lpCmsTest/oss/image",
+      // actionUrl: "https://www.linchongpets.com/lpCmsTest/oss/image",
+      actionUrl: '/api/oss/upload',
       step: 1,
       activeName: 'defaultSetting',
       form: {
-        commodityType: '1',
-        commodityPattern: '',
+        commodityType: '0',
+        commodityPattern: '0',
         multiSpec: false,
         distributed: false,
         commodityName: '',
+        commodityImgList: [],
+        commodityDisplayImg: '',
+        saleDate: [],
+        commodityRules: '',
+        commodityUsage: '',
+        refundType: '0',
+        marketPrice: '',
+        sellingPrice: '',
+        purchasePrice: '',
+        stock: '',
         stockWarn: 0,
         saleCount: 0,
         browseCount: 0,
@@ -693,7 +740,27 @@ export default {
         showSale: false,
         shopId: [],
         verificationType: '0',
-        commodityDetail: ''
+        commodityDetail: '',
+        csContact: '',
+        csWxcode: '',
+        shareTitle: '',
+        shareInfo: '',
+        shareWapImg: '',
+        shareMiniImg: '',
+        sharePost: '',
+        purchasePoints: 0,
+        commissionLevelOne: 0,
+        commissionLevelTwo: 0,
+        commissionLevelThree: 0,
+        specList: [
+          {
+            specName: '',
+            marketPrice: 0.00,
+            purchasePrice: 0.00,
+            sellingPrice: 0.00,
+            stock: 0
+          }
+        ]
       },
       options: [{
         value: '选项1',
@@ -743,37 +810,74 @@ export default {
       fileList: [],
       dialogImageUrl: '',
       dialogVisible: false,
-      ossData: { 'userId ': shopId, 'ossZone ': 'mall' },
-      addressRange: ["上海市 黄浦区", "上海市 徐汇区", "上海市 长宁区", "上海市 静安区", "上海市 普陀区", "上海市 虹口区",
-        "上海市 杨浦区", "上海市 闵行区", "上海市 宝山区", "上海市 嘉定区", "上海市 浦东新区", "上海市 金山区",
-        "上海市 松江区", "上海市 青浦区", "上海市 奉贤区", "上海市 崇明区"],
+      commodityImgOssParam: { 'path': 'mall/commodity' },
+      csOssParam: { 'path': 'mall/customer-service' },
+      shareOssParam: { 'path': 'mall/share/wap' },
       formRules: {
-        shopName: [
-          { required: true, message: '请输入商铺名称', trigger: 'blur' },
+        commodityName: [
+          { required: true, message: '请输入商品名称', trigger: 'blur' },
           { max: 32, message: '长度不得超过32位', trigger: 'blur' }
         ],
-        linkman: [
-          { required: true, message: '请输入联系人', trigger: 'blur' },
-          { max: 5, message: '长度不得超过5位', trigger: 'blur' }
+        commodityImages: [
+          { required: true, message: '请上传商品图片', trigger: 'blur' }
         ],
-        mobile: [
-          { required: true, message: '请输入手机号', trigger: 'blur' },
-          { validator: validMobile, message: '请输入正确的手机号', trigger: 'blur' },
+        commodityDisplayImg: [
+          { required: true, message: '请上传商品展示图片', trigger: 'blur' }
         ],
-        wechat: [
-          { required: true, message: '请填写微信号', trigger: 'blur' },
+        saleDate: [
+          { required: true, message: '请输入售卖日期', trigger: 'blur' }
         ],
-        addressDistrict: [
-          { required: true, message: '请选择所在区', trigger: 'change' },
+        commodityRules: [
+          { required: true, message: '请输入商品购买须知', trigger: 'blur' }
         ],
-        addressDetail: [
-          { required: true, message: '请输入详细地址', trigger: 'blur' },
-          { max: 128, message: '长度不得超过128位', trigger: 'blur' }
+        commodityUsage: [
+          { required: true, message: '请输入商品使用须知', trigger: 'blur' }
         ],
-        shopStatus: [
-          { required: true, message: '请选择状态', trigger: 'change' },
+        marketPrice: [
+          { required: true, message: '请输入商品市场价' },
+          { type: 'number', message: '市场价必须为数字' }
         ],
-
+        sellingPrice: [
+          { required: true, message: '请输入商品售价' },
+          { type: 'number', message: '售价必须为数字' }
+        ],
+        purchasePrice: [
+          { required: true, message: '请输入商品结算价' },
+          { type: 'number', message: '结算价必须为数字' }
+        ],
+        shopId: [
+          { required: true, message: '请输入商家' }
+        ],
+        verificationDate: [
+          { required: true, message: '请输入核销时间' }
+        ],
+        purchaseLimit: [
+          { required: true, message: '请输入限购数量' }
+        ],
+        commodityDetail: [
+          { required: true, message: '请输入商品详情' }
+        ],
+        csContact: [
+          { required: true, message: '请填写客服联系方式' },
+        ],
+        csWxcode: [
+          { required: true, message: '请填写客服二维码' },
+        ],
+        shareTitle: [
+          { required: true, message: '请填写分享标题' },
+        ],
+        shareInfo: [
+          { required: true, message: '请填写分享内容' },
+        ],
+        shareWapImg: [
+          { required: true, message: '请上传分享wap图片' },
+        ],
+        sharePost: [
+          { required: true, message: '请上传分享海报图片' },
+        ],
+        purchasePoints: [
+          { required: true, message: '请填写购买所得积分' },
+        ]
       }
     }
   },
@@ -795,6 +899,19 @@ export default {
     },
     handleClick (tab, event) {
       console.log(tab, event);
+    },
+    addSpec () {
+      var specItem = {
+        specName: '',
+        marketPrice: 0.00,
+        purchasePrice: 0.00,
+        sellingPrice: 0.00,
+        stock: 0
+      }
+      this.form.specList.push(specItem)
+    },
+    delSpec (index) {
+      this.form.specList.splice(index, 1)
     },
     shopDetail () {
       //清空遗留数据
@@ -842,39 +959,132 @@ export default {
         }
       })
     },
-    handleRemove (file, fileList) {
-      console.log(file)
+    uploadCommodity () {
+      var that = this
+      this.loading = true
+      this.pageLoading = true
+
+      var p2 = new Promise(function (resolve, reject) {
+        that.$refs['form2'].validate((valid) => {
+          if (valid) {
+            resolve();
+          } else {
+            that.$message.error('基础设置数据缺失,请检查数据完整性！')
+            that.stopUpload()
+          }
+        })
+      });
+      var p3 = new Promise(function (resolve, reject) {
+        that.$refs['form3'].validate((valid) => {
+          if (valid) {
+            resolve();
+          } else {
+            setTimeout(function () { that.$message.error('价格/库存设置数据缺失,请检查数据完整性！') }, 100)
+            that.stopUpload()
+          }
+        })
+      });
+      var p4 = new Promise(function (resolve, reject) {
+        that.$refs['form4'].validate((valid) => {
+          if (valid) {
+            resolve();
+          } else {
+            setTimeout(function () { that.$message.error('核销设置数据缺失,请检查数据完整性！') }, 200)
+            that.stopUpload()
+          }
+        })
+      });
+      var p5 = new Promise(function (resolve, reject) {
+        that.$refs['form5'].validate((valid) => {
+          if (valid) {
+            resolve();
+          } else {
+            setTimeout(function () { that.$message.error('客服/社群设置数据缺失,请检查数据完整性！') }, 300)
+            that.stopUpload()
+          }
+        })
+      });
+      var p6 = new Promise(function (resolve, reject) {
+        that.$refs['form6'].validate((valid) => {
+          if (valid) {
+            resolve();
+          } else {
+            setTimeout(function () { that.$message.error('分享设置数据缺失,请检查数据完整性！') }, 400)
+            that.stopUpload()
+          }
+        })
+      });
+      var p7 = new Promise(function (resolve, reject) {
+        that.$refs['form7'].validate((valid) => {
+          if (valid) {
+            resolve();
+          } else {
+            setTimeout(function () { that.$message.error('积分设置数据缺失,请检查数据完整性！') }, 500)
+            that.stopUpload()
+          }
+        })
+      });
+
+      Promise.all([p2, p3, p4, p5, p6, p7]).then(function () {
+
+      });
+    },
+    stopUpload () {
+      this.loading = false
+      this.pageLoading = false
+    },
+    handleCommodityImageRemove (file, fileList) {
       var index = 0
-      this.form.imgList.forEach(element => {
+      this.form.commodityImgList.forEach(element => {
         if (element.imgName == file.name) {
-          this.form.imgList.splice(index, 1)
+          this.form.commodityImgList.splice(index, 1)
           index++
         }
       });
+    },
+    handleCommodityImageSuccess (response, file, fileList) {
+      let element = {
+        imgName: response.data.fileName,
+        imgUrl: response.data.relativePath,
+      }
+      this.form.commodityImgList.push(element)
+    },
+    handleDisplayRemove (file, fileList) {
+      this.form.commodityDisplayImg = ''
+    },
+    handleDisplaySuccess (response, file, fileList) {
+      this.form.commodityDisplayImg = response.data.relativePath
+    },
+    handleCsWxcodeRemove (file, fileList) {
+      this.form.csWxcode = ''
+    },
+    handleCsWxcodeSuccess (response, file, fileList) {
+      this.form.csWxcode = response.data.relativePath
+    },
+    handleShareWapImgRemove (file, fileList) {
+      this.form.shareWapImg = ''
+    },
+    handleShareWapImgSuccess (response, file, fileList) {
+      this.form.shareWapImg = response.data.relativePath
+    },
+    handleShareMiniImgRemove (file, fileList) {
+      this.form.shareMiniImg = ''
+    },
+    handleShareMiniImgSuccess (response, file, fileList) {
+      this.form.shareMiniImg = response.data.relativePath
+    },
+    handleSharePostRemove (file, fileList) {
+      this.form.sharePost = ''
+    },
+    handleSharePostSuccess (response, file, fileList) {
+      this.form.sharePost = response.data.relativePath
     },
     handlePictureCardPreview (file) {
       this.dialogImageUrl = file.url;
       this.dialogVisible = true;
     },
-    handleSuccess (response, file, fileList) {
-      console.log(file)
-      this.canUpload = true
-      let picFile = {
-        imgName: file.response.data.split('/')[file.response.data.split('/').length - 1],
-        imgUrl: file.response.data,
-      }
-      this.form.imgList.push(picFile)
-    },
     handleBefore () {
-      if (this.form.imgList.length == 12) {
-        this.$message.console.warn("图片最多上传12张！");
-        return false
-      } else if (this.canUpload === true) {
-        this.canUpload = false
-        return true
-      } else {
-        return false
-      }
+
     },
   }
 }
@@ -898,6 +1108,10 @@ export default {
 }
 .s-profit {
   color: #f56c6c;
+}
+.s-warning {
+  color: #f56c6c;
+  font-size: 14px;
 }
 .inputSpecRow {
   margin-top: 10px;
