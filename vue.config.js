@@ -19,7 +19,7 @@ module.exports = {
       '/api': {
         // target: 'https://result.eolinker.com/nw4JNpZd854dddc83b53ca8f65d6aa33f5ddbfe20d420e8?uri=',
         // target: 'https://result.eolinker.com/SSn5AuU5fa51ddababb58a0370bc6211478ffd8d9a8ca24?uri=',
-        target: 'http://localhost:2010',
+        target: 'http://localhost:2010/mall-api/',
         changeOrigin: true,
         pathRewrite: {
           '^/api': '' // 代理的路径

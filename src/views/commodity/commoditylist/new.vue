@@ -71,7 +71,8 @@
                             placeholder="请输入商品名称"></el-input>
                 </el-form-item>
                 <el-form-item label="商品图片"
-                              prop="commodityImages">
+                              prop="commodityImgList"
+                              ref="commodityImgList">
                   <el-upload :action="actionUrl"
                              list-type="picture-card"
                              :data="commodityImgOssParam"
@@ -90,7 +91,8 @@
                 </el-form-item>
 
                 <el-form-item label="商品展示图片"
-                              prop="commodityDisplayImg">
+                              prop="commodityDisplayImg"
+                              ref="commodityDisplayImg">
                   <el-upload :action="actionUrl"
                              list-type="picture-card"
                              :data="commodityImgOssParam"
@@ -395,7 +397,8 @@
                 </el-form-item>
 
                 <el-form-item label="客服二维码"
-                              prop="csWxcode">
+                              prop="csWxcode"
+                              ref="csWxcode">
                   <el-upload :action="actionUrl"
                              list-type="picture-card"
                              :data="csOssParam"
@@ -453,7 +456,8 @@
                   </el-col>
                 </el-form-item>
                 <el-form-item label="wap分享图片"
-                              prop="shareWapImg">
+                              prop="shareWapImg"
+                              ref="shareWapImg">
                   <el-upload :action="actionUrl"
                              list-type="picture-card"
                              :data="shareOssParam"
@@ -471,7 +475,8 @@
                   </el-dialog>
                 </el-form-item>
                 <el-form-item label="小程序分享图片"
-                              prop="shareMiniImg">
+                              prop="shareMiniImg"
+                              ref="shareMiniImg">
                   <el-upload :action="actionUrl"
                              list-type="picture-card"
                              :data="shareOssParam"
@@ -489,7 +494,8 @@
                   </el-dialog>
                 </el-form-item>
                 <el-form-item label="自定义海报"
-                              prop="sharePost">
+                              prop="sharePost"
+                              ref="sharePost">
                   <el-upload :action="actionUrl"
                              list-type="picture-card"
                              :data="shareOssParam"
@@ -555,6 +561,7 @@
                               prop="commissionLevelOne">
                   <el-col :span="4">
                     <el-input v-model="form.commissionLevelOne"
+                              @change="handlecommissionOneChange"
                               type="number"
                               step="0.01"
                               min="0"
@@ -571,6 +578,7 @@
                               prop="commissionLevelTwo">
                   <el-col :span="4">
                     <el-input v-model="form.commissionLevelTwo"
+                              @change="handlecommissionTwoChange"
                               type="number"
                               step="0.01"
                               min="0"
@@ -587,6 +595,7 @@
                               prop="commissionLevelThree">
                   <el-col :span="4">
                     <el-input v-model="form.commissionLevelThree"
+                              @change="handlecommissionThreeChange"
                               type="number"
                               step="0.01"
                               min="0"
@@ -615,7 +624,7 @@
                 <el-form-item label="商品规格"
                               prop="commoditySpec">
                   <el-row>
-                    <el-col :span="8">商品属性名</el-col>
+                    <el-col :span="8">商品规格名</el-col>
                     <el-col :span="3">市场价格</el-col>
                     <el-col :span="3">结算价格</el-col>
                     <el-col :span="3">售价</el-col>
@@ -623,7 +632,7 @@
                     <el-col :span="4">操作</el-col>
                   </el-row>
                   <el-row class="inputSpecRow"
-                          v-for="(item,index) in form.specList"
+                          v-for="(item,index) in form.commoditySpecList"
                           v-bind:key="index">
                     <el-col :span="8">
                       <el-input v-model="item.specName"
@@ -703,7 +712,7 @@
 </template>
 
 <script>
-import { shopNew, shopDetail, shopEdit, getShopId } from "@/api/shop/shopApi"
+import { commodityTableList, commodityNew, commodityDetail, commodityEdit } from "@/api/commodity/commodityApi"
 import util from '@/libs/util'
 var shopId = ''
 
@@ -755,7 +764,7 @@ export default {
         commissionLevelOne: 0,
         commissionLevelTwo: 0,
         commissionLevelThree: 0,
-        specList: [
+        commoditySpecList: [
           {
             specName: '',
             marketPrice: 0.00,
@@ -819,13 +828,13 @@ export default {
       formRules: {
         commodityName: [
           { required: true, message: '请输入商品名称', trigger: 'blur' },
-          { max: 32, message: '长度不得超过32位', trigger: 'blur' }
+          { max: 200, message: '长度不得超过200个字', trigger: 'blur' }
         ],
-        commodityImages: [
-          { required: true, message: '请上传商品图片', trigger: 'blur' }
+        commodityImgList: [
+          { required: true, message: '请上传商品图片', trigger: 'change' }
         ],
         commodityDisplayImg: [
-          { required: true, message: '请上传商品展示图片', trigger: 'blur' }
+          { required: true, message: '请上传商品展示图片', trigger: 'change' }
         ],
         saleDate: [
           { required: true, message: '请输入售卖日期', trigger: 'blur' }
@@ -914,10 +923,10 @@ export default {
         sellingPrice: 0.00,
         stock: 0
       }
-      this.form.specList.push(specItem)
+      this.form.commoditySpecList.push(specItem)
     },
     delSpec (index) {
-      this.form.specList.splice(index, 1)
+      this.form.commoditySpecList.splice(index, 1)
     },
     shopDetail () {
       //清空遗留数据
@@ -979,6 +988,7 @@ export default {
             that.stopUpload()
           }
         })
+        // resolve();
       });
       var p3 = new Promise(function (resolve, reject) {
         that.$refs['form3'].validate((valid) => {
@@ -989,6 +999,8 @@ export default {
             that.stopUpload()
           }
         })
+        // resolve();
+
       });
       var p4 = new Promise(function (resolve, reject) {
         that.$refs['form4'].validate((valid) => {
@@ -999,6 +1011,8 @@ export default {
             that.stopUpload()
           }
         })
+        // resolve();
+
       });
       var p5 = new Promise(function (resolve, reject) {
         that.$refs['form5'].validate((valid) => {
@@ -1009,6 +1023,8 @@ export default {
             that.stopUpload()
           }
         })
+        // resolve();
+
       });
       var p6 = new Promise(function (resolve, reject) {
         that.$refs['form6'].validate((valid) => {
@@ -1019,6 +1035,8 @@ export default {
             that.stopUpload()
           }
         })
+        // resolve();
+
       });
       var p7 = new Promise(function (resolve, reject) {
         that.$refs['form7'].validate((valid) => {
@@ -1029,9 +1047,152 @@ export default {
             that.stopUpload()
           }
         })
+        // resolve();
+
       });
 
       Promise.all([p2, p3, p4, p5, p6, p7]).then(function () {
+        var commodityDetail = that.form.commodityDetail
+        if (commodityDetail.replace(/(^\s*)|(\s*$)/g, "") == '') {
+          that.$message.error('商品详情数据缺失,请检查数据完整性！')
+          that.stopUpload()
+          return
+        }
+        //校验分销设置
+        if (that.form.distributed) {
+          var distributedLevelOne = that.form.commissionLevelOne
+          var distributedLevelTwo = that.form.commissionLevelTwo
+          var distributedLevelThree = that.form.commissionLevelThree
+          if (distributedLevelOne.toString().replace(/[^\d.]/g, "") == '' || distributedLevelTwo.toString().replace(/[^\d.]/g, "") == '' || distributedLevelThree.toString().replace(/[^\d.]/g, "") == '') {
+            that.$message.error('商品分销设置数据缺失,请检查数据完整性！')
+            that.stopUpload()
+            return
+          }
+          if (distributedLevelOne == 0 || distributedLevelTwo == 0 || distributedLevelThree == 0) {
+            that.$message.error('商品分销设置数据必须大于0,请检查数据正确性！')
+            that.stopUpload()
+            return
+          }
+        }
+        //校验规格设置
+        if (that.form.multiSpec) {
+          var commoditySpecList = that.form.commoditySpecList
+          commoditySpecList.forEach(element => {
+            var specName = element.specName
+            if (specName.toString().replace(/(^\s*)|(\s*$)/g, "") == '') {
+              that.$message.error('商品多属性设置规格名缺失,请检查数据完整性！')
+              that.stopUpload()
+              return
+            }
+          })
+        }
+
+        var shopIdArr = that.form.shopId
+        var shopIds = ''
+        for (var i = 0; i < shopIdArr.length; i++) {
+          if (shopIdArr[i] !== shopIdArr[shopIdArr.length - 1]) {
+            shopIds += shopIdArr[i] + ","
+          } else {
+            shopIds += shopIdArr[i]
+          }
+        }
+
+        var verificationDate = that.form.verificationDate
+        var verificationType = that.form.verificationType
+        if (verificationType == '0') {
+          verificationDate = verificationDate[0] + ',' + verificationDate[1]
+        }
+
+
+        var saleDate = that.form.saleDate[0] + ',' + that.form.saleDate[1]
+
+
+        //填充表单提交
+        var commodityInfo = {
+          commodityName: that.form.commodityName,
+          commodityType: that.form.commodityType,
+          commodityPattern: that.form.commodityPattern,
+          displayImg: that.form.commodityDisplayImg,
+          saleDate: saleDate,
+          marketPrice: that.form.marketPrice,
+          sellingPrice: that.form.sellingPrice,
+          purchasePrice: that.form.purchasePrice,
+          stock: that.form.stock,
+          stockWarn: that.form.stockWarn,
+          distributed: that.form.distributed ? '0' : '1',
+          commodityRules: that.form.commodityRules,
+          commodityUsage: that.form.commodityUsage,
+          commodityDetail: that.form.commodityDetail,
+          multiSpec: that.form.multiSpec ? '0' : '1',
+          recommended: that.form.recommended ? '0' : '1',
+          shopId: shopIds,
+          saleCount: that.form.saleCount,
+          browseCount: that.form.browseCount,
+          showStock: that.form.showStock ? '0' : '1',
+          showSale: that.form.showSale ? '0' : '1',
+          verificationType: that.form.verificationType,
+          verificationDate: verificationDate,
+          purchaseLimit: that.form.purchaseLimit,
+          csContact: that.form.csContact,
+          csWxcode: that.form.csWxcode,
+          shareTitle: that.form.shareTitle,
+          shareInfo: that.form.shareInfo,
+          shareWapImg: that.form.shareWapImg,
+          shareMiniImg: that.form.shareMiniImg,
+          sharePost: that.form.sharePost,
+          purchasePoints: that.form.purchasePoints,
+          refundType: that.form.refundType
+        }
+
+        var commoditySpecList = []
+        that.form.commoditySpecList.forEach(specItem => {
+          var spec = {
+            specName: specItem.specName,
+            marketPrice: specItem.marketPrice,
+            sellingPrice: specItem.sellingPrice,
+            purchasePrice: specItem.purchasePrice,
+            stock: specItem.stock
+          }
+          commoditySpecList.push(spec)
+        })
+
+        var commodityImgList = []
+        that.form.commodityImgList.forEach(imgItem => {
+          var img = {
+            imgName: imgItem.imgName,
+            imgUrl: imgItem.imgUrl
+          }
+          commodityImgList.push(img)
+        })
+
+        var commodityDistributeList = [{
+          grade: '1',
+          commission: that.form.commissionLevelOne
+        }, {
+          grade: '2',
+          commission: that.form.commissionLevelTwo
+        }, {
+          grade: '3',
+          commission: that.form.commissionLevelThree
+        }]
+
+        if (that.pageType === "edit") {
+
+        } else {
+
+          let data = {
+            commodityInfo: commodityInfo,
+            commodityImgList: commodityImgList,
+            commoditySpecList: commoditySpecList,
+            commodityDistributeList: commodityDistributeList
+          }
+          commodityNew(data).then(res => {
+            console.log(res)
+
+          });
+
+        }
+
 
       });
     },
@@ -1042,48 +1203,55 @@ export default {
     handleCommodityImageRemove (file, fileList) {
       var index = 0
       this.form.commodityImgList.forEach(element => {
-        if (element.imgName == file.name) {
+        if (element.imgName == file.response.data.fileName) {
           this.form.commodityImgList.splice(index, 1)
-          index++
         }
+        index++
       });
     },
     handleCommodityImageSuccess (response, file, fileList) {
+      debugger
       let element = {
         imgName: response.data.fileName,
         imgUrl: response.data.relativePath,
       }
       this.form.commodityImgList.push(element)
+      this.$refs.commodityImgList.clearValidate()
     },
     handleDisplayRemove (file, fileList) {
       this.form.commodityDisplayImg = ''
     },
     handleDisplaySuccess (response, file, fileList) {
       this.form.commodityDisplayImg = response.data.relativePath
+      this.$refs.commodityDisplayImg.clearValidate()
     },
     handleCsWxcodeRemove (file, fileList) {
       this.form.csWxcode = ''
     },
     handleCsWxcodeSuccess (response, file, fileList) {
       this.form.csWxcode = response.data.relativePath
+      this.$refs.csWxcode.clearValidate()
     },
     handleShareWapImgRemove (file, fileList) {
       this.form.shareWapImg = ''
     },
     handleShareWapImgSuccess (response, file, fileList) {
       this.form.shareWapImg = response.data.relativePath
+      this.$refs.shareWapImg.clearValidate()
     },
     handleShareMiniImgRemove (file, fileList) {
       this.form.shareMiniImg = ''
     },
     handleShareMiniImgSuccess (response, file, fileList) {
       this.form.shareMiniImg = response.data.relativePath
+      this.$refs.shareMiniImg.clearValidate()
     },
     handleSharePostRemove (file, fileList) {
       this.form.sharePost = ''
     },
     handleSharePostSuccess (response, file, fileList) {
       this.form.sharePost = response.data.relativePath
+      this.$refs.sharePost.clearValidate()
     },
     handlePictureCardPreview (file) {
       this.dialogImageUrl = file.url;
@@ -1101,6 +1269,15 @@ export default {
     handelStockWarnChange (value) {
       this.form.stockWarn = this.clearNoPositiveNum(value)
     },
+    handlecommissionOneChange (value) {
+      this.form.commissionLevelOne = this.clearNoNum(value)
+    },
+    handlecommissionTwoChange (value) {
+      this.form.commissionLevelTwo = this.clearNoNum(value)
+    },
+    handlecommissionThreeChange (value) {
+      this.form.commissionLevelThree = this.clearNoNum(value)
+    },
     clearNoNum (value) {
       value = value.replace(/[^\d.]/g, "");  //清除“数字”和“.”以外的字符   
       value = value.replace(/\.{2,}/g, "."); //只保留第一个. 清除多余的   
@@ -1116,6 +1293,21 @@ export default {
         value = parseInt(value)
       }
       return value;
+    },
+    dispatch (componentName, eventName, params) {
+      var parent = this.$parent || this.$root;
+      var name = parent.$options.componentName;
+
+      while (parent && (!name || name !== componentName)) {
+        parent = parent.$parent;
+
+        if (parent) {
+          name = parent.$options.componentName;
+        }
+      }
+      if (parent) {
+        parent.$emit.apply(parent, [eventName].concat(params));
+      }
     }
   }
 }
