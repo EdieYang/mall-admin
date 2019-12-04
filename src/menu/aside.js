@@ -2,6 +2,18 @@
 export default [
   { path: '/index', title: '首页', icon: 'home' },
   {
+    path: '',
+    title: '设置',
+    icon: 'cogs',
+    children: [
+      {
+        path: '/settings/customerSupport/index',
+        title: '客服设置',
+        icon: ''
+      }
+    ]
+  },
+  {
     path: '/shop',
     title: '商户管理',
     icon: 'address-book-o',

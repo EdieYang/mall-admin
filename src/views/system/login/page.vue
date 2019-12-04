@@ -11,7 +11,7 @@
         <!-- form -->
         <div class="page-login-form">
           <p class="page-login-header">linkpets-mall</p>
-          <p class="page-login-title">邻宠好物分销平台</p>
+          <p class="page-login-title">邻宠商城运营平台</p>
           <el-form ref="loginForm"
                    label-position="top"
                    :rules="rules"

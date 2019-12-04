@@ -123,6 +123,22 @@ const frameIn = [
         component: _import('commodity/commoditylist/new')
       }
     ]
+  },
+  {
+    path: '/settings',
+    redirect: { name: 'index' },
+    component: layoutHeaderAside,
+    children: [
+      {
+        path: 'customerSupport/index',
+        name: 'customerSupport',
+        meta: {
+          title: '客服设置',
+          auth: true
+        },
+        component: _import('settings/customerSupport/index')
+      }
+    ]
   }
 ]
 
