@@ -21,7 +21,7 @@
 
           <el-row>
             <el-form-item label=" " label-width="100px">
-              <el-button type="primary" round="" size="small" @click="search"  icon="el-icon-search">搜索</el-button>
+              <el-button type="primary" round="" size="small" @click="search" icon="el-icon-search">搜索</el-button>
               <el-button type="" round="" size="small" @click="reset">重置</el-button>
               <el-button type="primary" size="small" round="" icon="el-icon-folder-add" @click="newCustomerSupport()">新增客服</el-button>
             </el-form-item>
@@ -216,7 +216,7 @@ export default {
           }
           customerSupportEdit(data).then(res => {
             this.$message.success('更新成功')
-            this.customerSupportDialog = false
+            this.cancelDialog()
             this.getList()
           })
         }
@@ -234,7 +234,7 @@ export default {
           }
           customerSupportNew(data).then(res => {
             this.$message.success('创建成功')
-            this.customerSupportDialog = false
+            this.cancelDialog()
             this.getList()
           })
         }
