@@ -1,7 +1,7 @@
 import request from '@/plugin/axios'
 
 /**
- * 获取客服列表
+ * 获取客服分页列表
  * @param data
  */
 export function customerSupportTableList(data) {
@@ -11,6 +11,20 @@ export function customerSupportTableList(data) {
     params: data
   })
 }
+
+
+/**
+ * 获取客服列表
+ * @param data
+ */
+export function customerSupportList(data) {
+  return request({
+    url: '/api/customerSupport/list',
+    method: 'get',
+    params: data
+  })
+}
+
 
 /**
  * 新增客服

@@ -1,6 +1,18 @@
 import request from '@/plugin/axios'
 
 /**
+ * 获取商品ID
+ * @param data
+ */
+export function commodityId() {
+  return request({
+    url: '/api/commodity/id',
+    method: 'get'
+  })
+}
+
+
+/**
  * 获取商品列表
  * @param data
  */

@@ -12,14 +12,25 @@ export function getShopId() {
 }
 
 /**
+ * 获取分页商铺列表
+ * @param data
+ */
+export function shopPage(data) {
+  return request({
+    url: '/api/shop/page',
+    method: 'get',
+    params: data
+  })
+}
+
+/**
  * 获取商铺列表
  * @param data
  */
-export function shopList(data) {
+export function shopList() {
   return request({
     url: '/api/shop/list',
-    method: 'get',
-    params: data
+    method: 'get'
   })
 }
 

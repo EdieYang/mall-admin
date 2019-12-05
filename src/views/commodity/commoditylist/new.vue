@@ -9,10 +9,12 @@
           <el-step title="预览及校验商品" description="预览无误才可提交审核"></el-step>
         </el-steps>
         <div v-show="step===1">
-          <el-form ref="form1" :model="form" label-width="110px" label-position="left" :rules="formRules" style="width:640px;display:inline-block;margin-top:50px;">
-
+          <el-form ref="form1" :model="form" label-width="110px" label-position="left" :rules="formRules" style="width:840px;display:inline-block;margin-top:50px;">
             <el-form-item label="商品类型" prop="commodityType">
               <el-radio v-for="item in commodityTypeRadios" v-model="form.commodityType" :label="item.value" border size="medium">{{item.label}}</el-radio>
+            </el-form-item>
+            <el-form-item label="商品渠道" prop="commodityChannel">
+              <el-radio v-for="item in commodityChannelRadios" v-model="form.commodityChannel" :label="item.value" border size="medium">{{item.label}}</el-radio>
             </el-form-item>
             <el-form-item label="商品模式" prop="commodityPattern">
               <el-radio v-for="item in commodityPatternRadios" v-model="form.commodityPattern" :label="item.value" size="medium">{{item.label}}</el-radio>
@@ -32,9 +34,8 @@
           <el-tabs v-model="activeName" @tab-click="handleClick" style="margin-top:50px;">
             <el-tab-pane label="基础设置" name="defaultSetting">
               <el-form ref="form2" :model="form" label-width="110px" label-position="left" :rules="formRules" class="form-container">
-
-                <el-form-item label="商品名称" prop="commodityName">
-                  <el-input v-model="form.commodityName" placeholder="请输入商品名称"></el-input>
+                <el-form-item label="商品名称" prop="commodityName" style="width:500px">
+                  <el-input v-model="form.commodityName" placeholder="请输入商品名称" maxlength="60"></el-input>
                 </el-form-item>
                 <el-form-item label="商品图片" prop="commodityImgList" ref="commodityImgList">
                   <el-upload :action="actionUrl" list-type="picture-card" :data="commodityImgOssParam" :on-preview="handlePictureCardPreview" :on-remove="handleCommodityImageRemove" :on-success="handleCommodityImageSuccess" :before-upload="handleBefore">
@@ -44,7 +45,6 @@
                     <img width="100%" :src="dialogImageUrl" alt="">
                   </el-dialog>
                 </el-form-item>
-
                 <el-form-item label="商品展示图片" prop="commodityDisplayImg" ref="commodityDisplayImg">
                   <el-upload :action="actionUrl" list-type="picture-card" :data="commodityImgOssParam" :on-preview="handlePictureCardPreview" :on-remove="handleDisplayRemove" :on-success="handleDisplaySuccess" :before-upload="handleBefore" :limit="1">
                     <i class="el-icon-plus"></i>
@@ -53,31 +53,49 @@
                     <img width="100%" :src="dialogImageUrl" alt="">
                   </el-dialog>
                 </el-form-item>
+                <el-form-item label="商家" prop="shopId">
+                  <el-col :span="24">
+                    <el-select v-model="form.shopId" multiple filterable placeholder="请选择商品所属的商家" style="width:40%">
+                      <el-option v-for="item in shopList" :key="item.value" :label="item.label" :value="item.value">
+                      </el-option>
+                    </el-select>
+                    <el-button type="primary" plain @click="addShop()" size="small" icon="el-icon-circle-plus-outline" style="margin-left:50px;">新增商家</el-button>
+                  </el-col>
+                </el-form-item>
+                <el-form-item label="限购数量" prop="purchaseLimit">
+                  <el-col :span="6">
+                    <el-input v-model="form.purchaseLimit" @change="handlePurchaseLimitChange" placeholder="请输入限购数量" type="number" step="1" min="0">
+                    </el-input>
+                  </el-col>
+                </el-form-item>
                 <el-form-item label="售卖日期" prop="saleDate">
                   <el-date-picker v-model="form.saleDate" type="datetimerange" value-format="yyyy-MM-dd HH:mm:ss" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
                   </el-date-picker>
-                </el-form-item>
-                <el-form-item label="商品购买须知" prop="commodityRules">
-                  <el-input type="textarea" autosize placeholder="请输入购买须知" v-model="form.commodityRules"></el-input>
-                </el-form-item>
-                <el-form-item label="商品使用须知" prop="commodityUsage">
-                  <el-input type="textarea" autosize placeholder="请输入使用须知" v-model="form.commodityUsage"></el-input>
+                  <el-popover placement="right-end" title="售卖日期说明" width="200" trigger="hover" content="不在售卖日期范围内：商品上架后不售卖。">
+                    <i class="el-icon-question" slot="reference" style="margin-left:30px;"></i>
+                  </el-popover>
                 </el-form-item>
                 <el-form-item label="退款模式" prop="refundType">
                   <el-radio v-for="item in refundTypeRadios" v-model="form.refundType" :label="item.value" border size="medium">{{item.label}}</el-radio>
-
+                  <el-popover placement="right-end" title="退款模式说明" width="400" trigger="hover" content="不可退款：此商品不可退货退款；过期后不可退款：此商品超出有效期后不可退货退款；可退款：此商品遵循正常售后流程">
+                    <i class="el-icon-question" slot="reference"></i>
+                  </el-popover>
                 </el-form-item>
-                <el-button type="primary" round plain size="small" @click="stepOver('stockSetting')">前往价格/库存设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <el-button type="primary" round plain size="small" @click="stepOver('stockSetting')">前往价格/库存设置<i class="el-icon-arrow-right el-icon-right"></i></el-button>
               </el-form>
 
             </el-tab-pane>
             <el-tab-pane label="价格/库存" name="stockSetting">
-
-              <el-form ref="form3" :model="form" label-width="110px" label-position="left" :rules="formRules" class="form-container">
-
+              <el-form ref="form3" :model="form" label-width="110px" label-position="left" :rules="formRules" class="form-container" style="width:600px;">
                 <el-form-item label="市场价" prop="marketPrice">
                   <el-col :span="9">
                     <el-input v-model="form.marketPrice" @change="handleMarketPriceChange" placeholder="保留2位小数" type="number" step="0.01" min="0">
+                      <template slot="append">元</template></el-input>
+                  </el-col>
+                </el-form-item>
+                <el-form-item label="划线价" prop="tagPrice">
+                  <el-col :span="9">
+                    <el-input v-model="form.tagPrice" @change="handleTagPriceChange" placeholder="保留2位小数" type="number" step="0.01" min="0">
                       <template slot="append">元</template></el-input>
                   </el-col>
                 </el-form-item>
@@ -89,14 +107,14 @@
                 </el-form-item>
                 <el-form-item label="商家结算价" prop="purchasePrice">
                   <el-col :span="9">
-                    <el-input v-model="form.purchasePrice" placeholder="保留2位小数" type="number" step="0.01" min="0">
+                    <el-input v-model="form.purchasePrice" @change="handlePurchasePriceChange" placeholder="保留2位小数" type="number" step="0.01" min="0">
                       <template slot="append">元</template></el-input>
                   </el-col>
                 </el-form-item>
                 <el-divider content-position="left">库存设置</el-divider>
                 <el-form-item label="库存" prop="stock">
                   <el-col :span="8">
-                    <el-input v-model="form.stock" placeholder="请输入库存" type="number" step="1" min="0">
+                    <el-input v-model="form.stock" @change="handelStockChange" placeholder="请输入库存" type="number" step="1" min="0">
                     </el-input>
                   </el-col>
                 </el-form-item>
@@ -112,17 +130,16 @@
                 </el-form-item>
                 <el-form-item label="基础销量" prop="saleCount">
                   <el-col :span="8">
-                    <el-input v-model="form.saleCount" placeholder="请输入基础销量" type="number" step="1">
+                    <el-input v-model="form.saleCount" @change="handelSaleCountChange" placeholder="请输入基础销量" type="number" step="1" min="0">
                     </el-input>
                   </el-col>
                 </el-form-item>
                 <el-form-item label="基础浏览量" prop="browseCount">
                   <el-col :span="8">
-                    <el-input v-model="form.browseCount" placeholder="请输入基础浏览量" type="number" step="1">
+                    <el-input v-model="form.browseCount" @change="handelBrowseCountChange" placeholder="请输入基础浏览量" type="number" step="1" min="0">
                     </el-input>
                   </el-col>
                 </el-form-item>
-
                 <el-form-item label="库存展示" prop="showStock">
                   <el-col :span="6">
                     <el-switch v-model="form.showStock" active-text="显示" inactive-text="隐藏">
@@ -135,85 +152,111 @@
                     </el-switch>
                   </el-col>
                 </el-form-item>
-
-                <el-button type="primary" round plain size="small" icon="el-icon-arrow-left" @click="stepOver('defaultSetting')">返回基础设置</el-button>
-                <el-button type="primary" round plain size="small" @click="stepOver('verificationSetting')">前往核销设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <div v-if="form.multiSpec">
+                  <el-button type="primary" round plain size="small" icon="el-icon-arrow-left" @click="stepOver('defaultSetting')">返回基础设置</el-button>
+                  <el-button type="primary" round plain size="small" @click="stepOver('multiSpecSetting')">前往多属性设置<i class="el-icon-arrow-right el-icon-right"></i></el-button>
+                </div>
+                <div v-if="!form.multiSpec">
+                  <el-button type="primary" round plain size="small" icon="el-icon-arrow-left" @click="stepOver('defaultSetting')">返回基础设置</el-button>
+                  <el-button type="primary" round plain size="small" @click="stepOver('commodityDetailSetting')">前往商品详情设置<i class="el-icon-arrow-right el-icon-right"></i></el-button>
+                </div>
               </el-form>
-
             </el-tab-pane>
-            <el-tab-pane label="核销设置" name="verificationSetting">
-              <el-form ref="form4" :model="form" label-width="110px" label-position="left" :rules="formRules" class="form-container">
-
-                <el-form-item label="商家" prop="shopId">
-                  <el-col :span="24">
-                    <el-select v-model="form.shopId" multiple filterable placeholder="请选择商品所属的商家" style="width:100%">
-                      <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
-                      </el-option>
-                    </el-select>
-                  </el-col>
+            <el-tab-pane label="多属性设置" name="multiSpecSetting" v-if="form.multiSpec" style="width:600px;">
+              <el-form ref="form4" :model="form" label-width="160px" label-position="left" :rules="formRules" class="form-container" style="width:100%;">
+                <el-form-item label="商品规格" prop="commoditySpec">
+                  <el-row>
+                    <el-col :span="7">商品规格名</el-col>
+                    <el-col :span="3">市场价格</el-col>
+                    <el-col :span="3">划线价格</el-col>
+                    <el-col :span="3">结算价格</el-col>
+                    <el-col :span="3">售价</el-col>
+                    <el-col :span="3">库存</el-col>
+                    <el-col :span="2">操作</el-col>
+                  </el-row>
+                  <el-row class="inputSpecRow" v-for="(item,index) in form.commoditySpecList" v-bind:key="index">
+                    <el-col :span="7">
+                      <el-input v-model="item.specName" placeholder="请输入商品属性名" style="width:90%;"></el-input>
+                    </el-col>
+                    <el-col :span="3">
+                      <el-input v-model="item.marketPrice" type="number" step="0.01" min="0" style="width:80%;"></el-input>
+                    </el-col>
+                    <el-col :span="3">
+                      <el-input v-model="item.tagPrice" type="number" step="0.01" min="0" style="width:80%;"></el-input>
+                    </el-col>
+                    <el-col :span="3">
+                      <el-input v-model="item.purchasePrice" type="number" step="0.01" min="0" style="width:80%;"></el-input>
+                    </el-col>
+                    <el-col :span="3">
+                      <el-input v-model="item.sellingPrice" type="number" step="0.01" min="0" style="width:80%;"></el-input>
+                    </el-col>
+                    <el-col :span="3">
+                      <el-input v-model="item.stock" type="number" step="1" min="0" style="width:80%;"></el-input>
+                    </el-col>
+                    <el-col :span="2" v-if='index!==0'>
+                      <el-button type="danger" icon="el-icon-delete" circle size="small" @click="delSpec(index)"></el-button>
+                    </el-col>
+                  </el-row>
+                  <el-button type="primary" size="small" @click="addSpec">添加属性</el-button>
                 </el-form-item>
-                <el-form-item label="核销方式" prop="verificationType">
-                  <el-radio v-model="form.verificationType" label="0">默认核销时间</el-radio>
-                  <el-radio v-model="form.verificationType" label="1">自定义核销时间</el-radio>
-                </el-form-item>
-                <el-form-item label="核销日期" prop="verificationDate" v-if="form.verificationType==='0'">
-                  <el-date-picker v-model="form.verificationDate" type="datetimerange" value-format="yyyy-MM-dd HH:mm:ss" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
-                  </el-date-picker>
-                </el-form-item>
-                <el-form-item label="核销天数" prop="verificationDate" v-if="form.verificationType==='1'">
-                  <el-col :span="8">
-                    <el-input v-model="form.verificationDate">
-                    </el-input>
-                  </el-col>
-                </el-form-item>
-                <el-form-item label="限购数量" prop="purchaseLimit">
-                  <el-col :span="8">
-                    <el-input v-model="form.purchaseLimit" placeholder="请输入限购数量" type="number" step="1" min="0">
-                    </el-input>
-                  </el-col>
-                </el-form-item>
-
                 <el-button type="primary" round plain size="small" icon="el-icon-arrow-left" @click="stepOver('stockSetting')">返回价格/库存设置</el-button>
-                <el-button type="primary" round plain size="small" @click="stepOver('commodityDetailSetting')">前往商品详情设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <el-button type="primary" round plain size="small" @click="stepOver('commodityDetailSetting')">前往商品详情设置<i class="el-icon-arrow-right el-icon-right"></i></el-button>
               </el-form>
             </el-tab-pane>
             <el-tab-pane label="商品详情" name="commodityDetailSetting">
+              <el-form ref="form5" :model="form" label-width="110px" label-position="left" :rules="formRules" class="form-container" style="width:600px;">
+                <el-form-item label="商品购买须知" prop="commodityRules">
+                  <el-input type="textarea" autosize placeholder="请输入购买须知" v-model="form.commodityRules"></el-input>
+                </el-form-item>
+                <el-form-item label="商品使用须知" prop="commodityUsage">
+                  <el-input type="textarea" autosize placeholder="请输入使用须知" v-model="form.commodityUsage"></el-input>
+                </el-form-item>
+              </el-form>
               <p class="s-warning ">录入商品详情，如果是HTML代码，请先点击左上角HTML按钮后再粘贴</p>
               <el-row>
                 <el-col :span="12">
                   <d2-ueditor v-model="form.commodityDetail" style="margin-top:20px;margin-bottom:20px;" />
                 </el-col>
               </el-row>
-              <el-button type="primary" round plain size="small" icon="el-icon-arrow-left" @click="stepOver('verificationSetting')">返回核销设置</el-button>
-              <el-button type="primary" round plain size="small" @click="stepOver('customerServiceSetting')">前往客服/社群设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+              <el-button v-if="form.multiSpec" type="primary" round plain size="small" icon="el-icon-arrow-left" @click="stepOver('multiSpecSetting')">返回多属性设置</el-button>
+              <el-button v-if="!form.multiSpec" type="primary" round plain size="small" icon="el-icon-arrow-left" @click="stepOver('stockSetting')">返回价格/库存设置</el-button>
+              <el-button type="primary" round plain size="small" @click="stepOver('customerServiceSetting')">前往售后/客服设置<i class="el-icon-arrow-right el-icon-right"></i></el-button>
             </el-tab-pane>
-            <el-tab-pane label="客服/社群" name="customerServiceSetting">
-              <el-form ref="form5" :model="form" label-width="110px" label-position="left" :rules="formRules" class="form-container">
-
-                <el-form-item label="客服联系方式" prop="csContact">
-                  <el-col :span="8">
-                    <el-input v-model="form.csContact" placeholder="请输入客服联系方式">
-                    </el-input>
-                  </el-col>
+            <el-tab-pane label="售后/客服设置" name="customerServiceSetting">
+              <el-form ref="form6" :model="form" label-width="110px" label-position="left" :rules="formRules" class="form-container">
+                <div v-if="form.commodityPattern == '0'">
+                  <el-form-item label="核销方式" prop="verificationType">
+                    <el-radio v-model="form.verificationType" label="0">默认核销时间</el-radio>
+                    <el-radio v-model="form.verificationType" label="1">自定义核销时间</el-radio>
+                  </el-form-item>
+                  <el-form-item label="核销日期" prop="verificationDate" v-if="form.verificationType==='0'">
+                    <el-date-picker v-model="form.verificationDate" type="datetimerange" value-format="yyyy-MM-dd HH:mm:ss" range-separator="至" start-placeholder="开始日期" end-placeholder="结束日期">
+                    </el-date-picker>
+                  </el-form-item>
+                  <el-form-item label="核销天数" prop="verificationDate" v-if="form.verificationType==='1'">
+                    <el-col :span="8">
+                      <el-input v-model="form.verificationDate">
+                      </el-input>
+                    </el-col>
+                  </el-form-item>
+                </div>
+                <el-form-item label="客服" prop="customerSupport">
+                  <el-row>
+                    <el-select v-model="form.customerSupport" placeholder="请选择客服">
+                      <el-option v-for="item in customerSupportList" :key="item.value" :label="item.label" :value="item.value">
+                        <span style="float: left;margin-right:30px;">微信号:{{ item.wechat }}</span>
+                        <span style="float: right; color: #8492a6; font-size: 13px;">联系方式:{{ item.phone }}</span>
+                      </el-option>
+                    </el-select>
+                    <el-button type="primary" style="margin-left:50px;" @click="addCustomerSupport()">添加客服</el-button>
+                  </el-row>
                 </el-form-item>
-
-                <el-form-item label="客服二维码" prop="csWxcode" ref="csWxcode">
-                  <el-upload :action="actionUrl" list-type="picture-card" :data="csOssParam" :on-preview="handlePictureCardPreview" :on-remove="handleCsWxcodeRemove" :on-success="handleCsWxcodeSuccess" :before-upload="handleBefore">
-                    <i class="el-icon-plus"></i>
-                  </el-upload>
-                  <el-dialog :visible.sync="dialogVisible" :modal-append-to-body="false">
-                    <img width="100%" :src="dialogImageUrl" alt="">
-                  </el-dialog>
-                </el-form-item>
-
                 <el-button type="primary" round plain size="small" icon="el-icon-arrow-left" @click="stepOver('commodityDetailSetting')">返回商品详情设置</el-button>
-                <el-button type="primary" round plain size="small" @click="stepOver('shareSetting')">前往分享设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <el-button type="primary" round plain size="small" @click="stepOver('shareSetting')">前往分享设置<i class="el-icon-arrow-right el-icon-right"></i></el-button>
               </el-form>
-
             </el-tab-pane>
             <el-tab-pane label="分享设置" name="shareSetting">
-              <el-form ref="form6" :model="form" label-width="110px" label-position="left" :rules="formRules" class="form-container">
-
+              <el-form ref="form7" :model="form" label-width="110px" label-position="left" :rules="formRules" class="form-container">
                 <el-form-item label="分享标题" prop="shareTitle">
                   <el-col :span="24">
                     <el-input v-model="form.shareTitle" placeholder="请输入分享标题">
@@ -251,24 +294,25 @@
                   </el-dialog>
                 </el-form-item>
                 <el-button type="primary" round plain size="small" icon="el-icon-arrow-left" @click="stepOver('customerServiceSetting')">返回客服/社群设置</el-button>
-                <el-button type="primary" round plain size="small" @click="stepOver('pointSetting')">前往积分设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+                <el-button type="primary" round plain size="small" @click="stepOver('pointSetting')">前往积分设置<i class="el-icon-arrow-right el-icon-right"></i></el-button>
               </el-form>
             </el-tab-pane>
             <el-tab-pane label="积分设置" name="pointSetting">
-              <el-form ref="form7" :model="form" label-width="110px" label-position="left" :rules="formRules" class="form-container">
-
+              <el-form ref="form8" :model="form" label-width="110px" label-position="left" :rules="formRules" class="form-container">
                 <el-form-item label="购买所得积分" prop="purchasePoints">
                   <el-col :span="12">
                     <el-input v-model="form.purchasePoints" placeholder="请输入积分" type="number" step="1">
                     </el-input>
                   </el-col>
                 </el-form-item>
+
+                <el-button type="primary" round plain size="small" icon="el-icon-arrow-left" @click="stepOver('shareSetting')">返回分享设置</el-button>
+                <el-button v-if="form.distributed" type="primary" round plain size="small" @click="stepOver('distributeSetting')">前往分销设置<i class="el-icon-arrow-right el-icon-right"></i></el-button>
               </el-form>
 
             </el-tab-pane>
             <el-tab-pane label="分销设置" name="distributeSetting" v-if="form.distributed">
-              <el-form ref="form8" :model="form" label-width="160px" label-position="left" :rules="formRules" class="form-container">
-
+              <el-form ref="form9" :model="form" label-width="160px" label-position="left" :rules="formRules" class="form-container">
                 <el-form-item label="Lv1分销佣金比例(%)" prop="commissionLevelOne">
                   <el-col :span="4">
                     <el-input v-model="form.commissionLevelOne" @change="handlecommissionOneChange" type="number" step="0.01" min="0" max="100">
@@ -301,59 +345,23 @@
                 </el-form-item>
               </el-form>
             </el-tab-pane>
-
-            <el-tab-pane label="多属性设置" name="multiSpecSetting" v-if="form.multiSpec">
-              <el-form ref="form9" :model="form" label-width="160px" label-position="left" :rules="formRules" class="form-container" style="width:100%;">
-                <el-form-item label="商品规格" prop="commoditySpec">
-                  <el-row>
-                    <el-col :span="8">商品规格名</el-col>
-                    <el-col :span="3">市场价格</el-col>
-                    <el-col :span="3">结算价格</el-col>
-                    <el-col :span="3">售价</el-col>
-                    <el-col :span="3">库存</el-col>
-                    <el-col :span="4">操作</el-col>
-                  </el-row>
-                  <el-row class="inputSpecRow" v-for="(item,index) in form.commoditySpecList" v-bind:key="index">
-                    <el-col :span="8">
-                      <el-input v-model="item.specName" placeholder="请输入商品属性名" style="width:90%;"></el-input>
-                    </el-col>
-                    <el-col :span="3">
-                      <el-input v-model="item.marketPrice" type="number" step="0.01" min="0" style="width:80%;"></el-input>
-                    </el-col>
-                    <el-col :span="3">
-                      <el-input v-model="item.purchasePrice" type="number" step="0.01" min="0" style="width:80%;"></el-input>
-                    </el-col>
-                    <el-col :span="3">
-                      <el-input v-model="item.sellingPrice" type="number" step="0.01" min="0" style="width:80%;"></el-input>
-                    </el-col>
-                    <el-col :span="3">
-                      <el-input v-model="item.stock" type="number" step="1" min="0" style="width:80%;"></el-input>
-                    </el-col>
-                    <el-col :span="4" v-if='index!==0'>
-                      <el-button type="danger" size="small" @click="delSpec(index)">删除</el-button>
-                    </el-col>
-                  </el-row>
-                  <el-button type="primary" size="small" @click="addSpec">添加属性</el-button>
-                </el-form-item>
-              </el-form>
-            </el-tab-pane>
           </el-tabs>
-
         </div>
-
       </el-card>
     </div>
     <template slot="footer">
-      <el-button type="primary" round plain size="large" @click="nextStep" v-if="step===1">前往录入商品信息设置<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+      <el-button type="primary" round plain size="large" @click="nextStep" v-if="step===1">前往录入商品信息设置<i class="el-icon-arrow-right el-icon-right"></i></el-button>
       <el-button type="primary" round plain size="large" icon="el-icon-arrow-left" @click="previousStep" v-if="step===2">返回商品初始设置</el-button>
-      <el-button type="danger" round size="large" @click="uploadCommodity" :loading="loading" v-if="step===2">保存商品信息并预览<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+      <el-button type="danger" round size="large" @click="uploadCommodity" :loading="loading" v-if="step===2">保存商品信息并预览<i class="el-icon-arrow-right el-icon-right"></i></el-button>
     </template>
   </d2-container>
 
 </template>
 
 <script>
-import { commodityTableList, commodityNew, commodityDetail, commodityEdit } from "@/api/commodity/commodityApi"
+import { commodityId, commodityTableList, commodityNew, commodityDetail, commodityEdit } from "@/api/commodity/commodityApi"
+import { customerSupportList } from "@/api/customerSupport/customerSupportApi"
+import { shopList } from "@/api/shop/shopApi"
 import util from '@/libs/util'
 var shopId = ''
 
@@ -365,14 +373,15 @@ export default {
       pageLoading: false,
       pageType: "",
       canUpload: true,
-      picPath: 'https://pic.linchongpets.com/',
-      // actionUrl: "https://www.linchongpets.com/lpCmsTest/oss/image",
+      picPath: 'https://linkpets-mall-dev.oss-accelerate.aliyuncs.com',
       actionUrl: '/api/oss/upload',
       step: 1,
       activeName: 'defaultSetting',
+      customerSupportList: [],
       form: {
         commodityType: '0',
-        commodityPattern: '0',
+        commodityChannel: '0',
+        commodityPattern: '1',
         multiSpec: false,
         distributed: false,
         commodityName: '',
@@ -383,6 +392,7 @@ export default {
         commodityUsage: '',
         refundType: '0',
         marketPrice: '',
+        tagPrice: '',
         sellingPrice: '',
         purchasePrice: '',
         stock: '',
@@ -394,8 +404,7 @@ export default {
         shopId: [],
         verificationType: '0',
         commodityDetail: '',
-        csContact: '',
-        csWxcode: '',
+        customerSupport: '',
         shareTitle: '',
         shareInfo: '',
         shareWapImg: '',
@@ -409,34 +418,27 @@ export default {
           {
             specName: '',
             marketPrice: 0.00,
+            tagPrice: 0.00,
             purchasePrice: 0.00,
             sellingPrice: 0.00,
             stock: 0
           }
         ]
       },
-      options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
+      shopList: [],
       stockWarnBoolean: false,
       commodityTypeRadios: [{
-        label: '普通商品',
+        label: '实体商品（物流或线下自提）',
         value: '0'
       }, {
-        label: '活动商品',
+        label: '虚拟商品（线上发放及线下核销）',
+        value: '1'
+      }],
+      commodityChannelRadios: [{
+        label: '平台渠道',
+        value: '0'
+      }, {
+        label: '公益专属渠道',
         value: '1'
       }],
       commodityPatternRadios: [{
@@ -463,13 +465,12 @@ export default {
       fileList: [],
       dialogImageUrl: '',
       dialogVisible: false,
-      commodityImgOssParam: { 'path': 'mall/commodity' },
-      csOssParam: { 'path': 'mall/customer-service' },
+      commodityImgOssParam: {},
       shareOssParam: { 'path': 'mall/share/wap' },
       formRules: {
         commodityName: [
-          { required: true, message: '请输入商品名称', trigger: 'blur' },
-          { max: 200, message: '长度不得超过200个字', trigger: 'blur' }
+          { required: true, message: '请输入商品名称（最多60个字）', trigger: 'blur' },
+          { max: 60, message: '长度不得超过60个字', trigger: 'blur' }
         ],
         commodityImgList: [
           { required: true, message: '请上传商品图片', trigger: 'change' }
@@ -488,6 +489,9 @@ export default {
         ],
         marketPrice: [
           { required: true, message: '请输入有效商品市场价' },
+        ],
+        tagPrice: [
+          { required: true, message: '请输入有效商品划线价' },
         ],
         sellingPrice: [
           { required: true, message: '请输入有效商品售价' },
@@ -513,11 +517,8 @@ export default {
         commodityDetail: [
           { required: true, message: '请输入商品详情' }
         ],
-        csContact: [
-          { required: true, message: '请填写客服联系方式' },
-        ],
-        csWxcode: [
-          { required: true, message: '请填写客服二维码' },
+        customerSupport: [
+          { required: true, message: '请选择客服' },
         ],
         shareTitle: [
           { required: true, message: '请填写分享标题' },
@@ -542,6 +543,10 @@ export default {
     if (this.pageType === "edit") {
       this.shopDetail()
     }
+
+    this.getCustomerSupportList()
+    this.getShopList()
+    this.generateCommodityId()
   },
   methods: {
     nextStep() {
@@ -556,10 +561,50 @@ export default {
     handleClick(tab, event) {
       console.log(tab, event);
     },
+    generateCommodityId() {
+      commodityId().then(res => {
+        this.form.commodityId = res
+        this.commodityImgOssParam.path = 'mall/commodity/' + this.form.commodityId
+      })
+
+    },
+    addShop() {
+      this.$router.push({ path: '/shop/shop/new' });
+    },
+    addCustomerSupport() {
+      this.$router.push({ path: '/settings/customerSupport/index' });
+    },
+    getCustomerSupportList() {
+      var data = {
+        belongType: '0', //TODO 根据角色类型默认选择
+      }
+      customerSupportList(data).then(res => {
+        res.forEach(item => {
+          var cs = {}
+          cs.value = item.id
+          cs.label = item.wechat
+          cs.phone = item.phone
+          cs.wechat = item.wechat
+          this.customerSupportList.push(cs)
+        })
+      })
+    },
+    getShopList() {
+      shopList().then(res => {
+        debugger
+        res.forEach(item => {
+          var shop = {}
+          shop.value = item.shopId
+          shop.label = item.shopName
+          this.shopList.push(shop)
+        })
+      })
+    },
     addSpec() {
       var specItem = {
         specName: '',
         marketPrice: 0.00,
+        tagPrice: 0.00,
         purchasePrice: 0.00,
         sellingPrice: 0.00,
         stock: 0
@@ -629,7 +674,6 @@ export default {
             that.stopUpload()
           }
         })
-        // resolve();
       });
       var p3 = new Promise(function(resolve, reject) {
         that.$refs['form3'].validate((valid) => {
@@ -640,35 +684,29 @@ export default {
             that.stopUpload()
           }
         })
-        // resolve();
-
-      });
-      var p4 = new Promise(function(resolve, reject) {
-        that.$refs['form4'].validate((valid) => {
-          if (valid) {
-            resolve();
-          } else {
-            setTimeout(function() { that.$message.error('核销设置数据缺失,请检查数据完整性！') }, 200)
-            that.stopUpload()
-          }
-        })
-        // resolve();
-
       });
       var p5 = new Promise(function(resolve, reject) {
         that.$refs['form5'].validate((valid) => {
           if (valid) {
             resolve();
           } else {
-            setTimeout(function() { that.$message.error('客服/社群设置数据缺失,请检查数据完整性！') }, 300)
+            setTimeout(function() { that.$message.error('商品详情数据缺失,请检查数据完整性！') }, 200)
             that.stopUpload()
           }
         })
-        // resolve();
-
       });
       var p6 = new Promise(function(resolve, reject) {
         that.$refs['form6'].validate((valid) => {
+          if (valid) {
+            resolve();
+          } else {
+            setTimeout(function() { that.$message.error('售后/客服设置数据缺失,请检查数据完整性！') }, 300)
+            that.stopUpload()
+          }
+        })
+      });
+      var p7 = new Promise(function(resolve, reject) {
+        that.$refs['form7'].validate((valid) => {
           if (valid) {
             resolve();
           } else {
@@ -676,11 +714,9 @@ export default {
             that.stopUpload()
           }
         })
-        // resolve();
-
       });
-      var p7 = new Promise(function(resolve, reject) {
-        that.$refs['form7'].validate((valid) => {
+      var p8 = new Promise(function(resolve, reject) {
+        that.$refs['form8'].validate((valid) => {
           if (valid) {
             resolve();
           } else {
@@ -688,14 +724,12 @@ export default {
             that.stopUpload()
           }
         })
-        // resolve();
-
       });
 
-      Promise.all([p2, p3, p4, p5, p6, p7]).then(function() {
+      Promise.all([p2, p3, p5, p6, p7, p8]).then(function() {
         var commodityDetail = that.form.commodityDetail
         if (commodityDetail.replace(/(^\s*)|(\s*$)/g, "") == '') {
-          that.$message.error('商品详情数据缺失,请检查数据完整性！')
+          that.$message.error('商品详情录入数据缺失,请检查数据完整性！')
           that.stopUpload()
           return
         }
@@ -756,6 +790,7 @@ export default {
           displayImg: that.form.commodityDisplayImg,
           saleDate: saleDate,
           marketPrice: that.form.marketPrice,
+          tagPrice: that.form.tagPrice,
           sellingPrice: that.form.sellingPrice,
           purchasePrice: that.form.purchasePrice,
           stock: that.form.stock,
@@ -790,6 +825,7 @@ export default {
           var spec = {
             specName: specItem.specName,
             marketPrice: specItem.marketPrice,
+            tagPrice: specItem.tagPrice,
             sellingPrice: specItem.sellingPrice,
             purchasePrice: specItem.purchasePrice,
             stock: specItem.stock
@@ -902,14 +938,32 @@ export default {
     handleBefore() {
 
     },
+    handlePurchaseLimitChange(value) {
+      this.form.purchaseLimit = this.clearNoPositiveNum(value)
+    },
     handleMarketPriceChange(value) {
       this.form.marketPrice = this.clearNoNum(value)
+    },
+    handleTagPriceChange(value) {
+      this.form.tagPrice = this.clearNoNum(value)
     },
     handleSellingPriceChange(value) {
       this.form.sellingPrice = this.clearNoNum(value)
     },
+    handlePurchasePriceChange(value) {
+      this.form.purchasePoints = this.clearNoNum(value)
+    },
+    handelStockChange(value) {
+      this.form.stock = this.clearNoPositiveNum(value)
+    },
     handelStockWarnChange(value) {
       this.form.stockWarn = this.clearNoPositiveNum(value)
+    },
+    handelSaleCountChange(value) {
+      this.form.saleCount = this.clearNoPositiveNum(value)
+    },
+    handelBrowseCountChange(value) {
+      this.form.browseCount = this.clearNoPositiveNum(value)
     },
     handlecommissionOneChange(value) {
       this.form.commissionLevelOne = this.clearNoNum(value)
@@ -928,11 +982,18 @@ export default {
       if (value.indexOf(".") < 0 && value != "" || value.indexOf(".") == 0) {//以上已经过滤，此处控制的是如果没有小数点，首位不能为类似于 01、02的金额  
         value = parseFloat(value);
       }
+      if (value < 0) {
+        value = 0 - value
+      }
       return value;
     },
     clearNoPositiveNum(value) {
       if (parseInt(value) + "" !== value) {
         value = parseInt(value)
+      }
+
+      if (parseInt(value) < 0) {
+        value = 0 - parseInt(value)
       }
       return value;
     },
@@ -961,7 +1022,7 @@ export default {
   font-size: 18px;
 }
 .form-container {
-  width: 640px;
+  width: 940px;
   display: inline-block;
   margin-top: 20px;
 }
