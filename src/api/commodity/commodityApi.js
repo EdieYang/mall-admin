@@ -11,7 +11,6 @@ export function commodityId() {
   })
 }
 
-
 /**
  * 获取商品列表
  * @param data
@@ -57,5 +56,17 @@ export function commodityEdit(data) {
     url: '/api/commodity',
     method: 'put',
     data
+  })
+}
+
+/**
+ * 修改商品状态
+ * @param data
+ */
+export function commodityStatusEdit(data) {
+  return request({
+    url: '/api/commodity/commodityStatus',
+    method: 'put',
+    params: data
   })
 }
