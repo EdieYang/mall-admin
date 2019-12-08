@@ -973,6 +973,25 @@
               <div id="code"></div>
               <canvas id="canvas"></canvas>
             </div>
+            <div class="qrCodeToolBar">
+              <el-button
+                type="primary"
+                round
+                size="large"
+                icon="el-icon-arrow-left"
+                @click="toCreateCommodity"
+                v-if="checked"
+                >创建下一个商品
+              </el-button>
+              <el-button
+                type="default"
+                round
+                size="large"
+                @click="toCommodityCheck"
+                v-if="checked"
+                >去审核商品<i class="el-icon-arrow-right el-icon-right"></i
+              ></el-button>
+            </div>
           </template>
         </div>
       </el-card>
@@ -1012,8 +1031,8 @@
         round
         size="large"
         icon="el-icon-arrow-left"
-        @click="previousStep"
-        v-if="step === 3"
+        @click="toEditCommdity"
+        v-if="step === 3 && !checked"
         >返回修改商品信息
       </el-button>
 
@@ -1023,7 +1042,7 @@
         size="large"
         @click="uploadCommodityCheck"
         :loading="loadingUploadCommodityCheck"
-        v-if="step === 3"
+        v-if="step === 3 && !checked"
         >提交审核<i class="el-icon-arrow-right el-icon-right"></i
       ></el-button>
     </template>
@@ -1058,6 +1077,7 @@ export default {
       picPath: 'https://linkpets-mall-dev.oss-accelerate.aliyuncs.com',
       actionUrl: '/api/oss/upload',
       step: 1,
+      checked: false,
       activeName: 'defaultSetting',
       customerSupportList: [],
       form: {
@@ -1215,7 +1235,6 @@ export default {
     if (this.pageType === 'edit') {
       this.shopDetail()
     }
-
     this.getCustomerSupportList()
     this.getShopList()
     this.generateCommodityId()
@@ -1229,6 +1248,10 @@ export default {
     },
     stepOver(tagName) {
       this.activeName = tagName
+    },
+    toEditCommdity() {
+      this.previousStep()
+      this.pageType = 'edit'
     },
     handleClick(tab, event) {
       console.log(tab, event)
@@ -1246,6 +1269,10 @@ export default {
     addCustomerSupport() {
       this.$router.push({ path: '/settings/customerSupport/index' })
     },
+    toCreateCommodity() {
+      this.reload()
+    },
+    toCommodityCheck() {},
     getCustomerSupportList() {
       var data = {
         belongType: '0' //TODO 根据角色类型默认选择
@@ -1302,33 +1329,6 @@ export default {
           }
           this.fileList.push(shopPic)
         })
-      })
-    },
-    shopNew() {
-      this.$refs.form.validate(valid => {
-        if (valid) {
-          let formData = this.form
-          this.pageLoading = true
-          if (this.pageType === 'edit') {
-            shopEdit(formData).then(res => {
-              console.log(res)
-              this.pageLoading = false
-              this.$message.success('更新成功')
-              if (this.pageType === 'edit') {
-                this.adoptDetail()
-              }
-              this.$router.push('/shop/index')
-            })
-          } else if (this.pageType === 'new') {
-            shopNew(formData).then(res => {
-              console.log(res)
-              this.pageLoading = false
-              this.$message.success('创建成功')
-              this.$refs['form'].resetFields()
-              this.$router.push('/shop/index')
-            })
-          }
-        }
       })
     },
     uploadCommodity() {
@@ -1449,7 +1449,6 @@ export default {
             }
           })
         }
-
         var shopIdArr = that.form.shopId
         var shopIds = ''
         for (var i = 0; i < shopIdArr.length; i++) {
@@ -1459,7 +1458,6 @@ export default {
             shopIds += shopIdArr[i]
           }
         }
-
         var verificationDate = ''
         var verificationType = ''
         if (that.form.commodityType == '1') {
@@ -1469,15 +1467,15 @@ export default {
             verificationDate = verificationDate[0] + ',' + verificationDate[1]
           }
         }
-
         var saleDate = that.form.saleDate[0] + ',' + that.form.saleDate[1]
         //处理商品价格转换成分
-        that.form.marketPrice = parseInt(that.form.marketPrice * 100)
+        var marketPrice = parseInt(that.form.marketPrice * 100)
+        var charityPrice = ''
         if (that.form.commodityChannel == '1') {
-          that.form.charityPrice = parseInt(that.form.charityPrice * 100)
+          charityPrice = parseInt(that.form.charityPrice * 100)
         }
-        that.form.sellingPrice = parseInt(that.form.sellingPrice * 100)
-        that.form.purchasePrice = parseInt(that.form.purchasePrice * 100)
+        var sellingPrice = parseInt(that.form.sellingPrice * 100)
+        var purchasePrice = parseInt(that.form.purchasePrice * 100)
 
         //填充表单提交
         var commodityInfo = {
@@ -1487,24 +1485,24 @@ export default {
           commodityPattern: that.form.commodityPattern,
           displayImg: that.form.commodityDisplayImg,
           saleDate: saleDate,
-          marketPrice: that.form.marketPrice,
-          charityPrice: that.form.charityPrice,
-          sellingPrice: that.form.sellingPrice,
-          purchasePrice: that.form.purchasePrice,
+          marketPrice: marketPrice,
+          charityPrice: charityPrice,
+          sellingPrice: sellingPrice,
+          purchasePrice: purchasePrice,
           stock: that.form.stock,
           stockWarn: that.form.stockWarn,
-          distributed: that.form.distributed ? '0' : '1',
+          distributed: that.form.distributed ? '1' : '0',
           commodityRules: that.form.commodityRules,
           commodityUsage: that.form.commodityUsage,
           commodityDetail: that.form.commodityDetail,
-          multiSpec: that.form.multiSpec ? '0' : '1',
-          recommended: that.form.recommended ? '0' : '1',
+          multiSpec: that.form.multiSpec ? '1' : '0',
+          recommended: that.form.recommended ? '1' : '0',
           shopId: shopIds,
           saleCount: that.form.saleCount,
           browseCount: that.form.browseCount,
-          showStock: that.form.showStock ? '0' : '1',
-          showSale: that.form.showSale ? '0' : '1',
-          verificationType: that.form.verificationType,
+          showStock: that.form.showStock ? '1' : '0',
+          showSale: that.form.showSale ? '1' : '0',
+          verificationType: verificationType,
           verificationDate: verificationDate,
           purchaseLimit: that.form.purchaseLimit,
           customerSupport: that.form.customerSupport,
@@ -1519,23 +1517,27 @@ export default {
         }
 
         var commoditySpecList = []
-        that.form.commoditySpecList.forEach(specItem => {
-          //转换价格
-          specItem.marketPrice = parseInt(specItem.marketPrice * 100)
-          specItem.charityPrice = parseInt(specItem.charityPrice * 100)
-          specItem.sellingPrice = parseInt(specItem.sellingPrice * 100)
-          specItem.purchasePrice = parseInt(specItem.purchasePrice * 100)
-
-          var spec = {
-            specName: specItem.specName,
-            marketPrice: specItem.marketPrice,
-            charityPrice: specItem.charityPrice,
-            sellingPrice: specItem.sellingPrice,
-            purchasePrice: specItem.purchasePrice,
-            stock: specItem.stock
-          }
-          commoditySpecList.push(spec)
-        })
+        if (that.form.multiSpec) {
+          that.form.commoditySpecList.forEach(specItem => {
+            //转换价格
+            var marketPrice = parseInt(specItem.marketPrice * 100)
+            var charityPrice = null
+            if (that.form.commodityChannel == '1') {
+              charityPrice = parseInt(specItem.charityPrice * 100)
+            }
+            var sellingPrice = parseInt(specItem.sellingPrice * 100)
+            var purchasePrice = parseInt(specItem.purchasePrice * 100)
+            var spec = {
+              specName: specItem.specName,
+              marketPrice: marketPrice,
+              charityPrice: charityPrice,
+              sellingPrice: sellingPrice,
+              purchasePrice: purchasePrice,
+              stock: specItem.stock
+            }
+            commoditySpecList.push(spec)
+          })
+        }
 
         var commodityImgList = []
         that.form.commodityImgList.forEach(imgItem => {
@@ -1546,22 +1548,26 @@ export default {
           commodityImgList.push(img)
         })
 
-        var commodityDistributeList = [
-          {
-            grade: '1',
-            commission: that.form.commissionLevelOne
-          },
-          {
-            grade: '2',
-            commission: that.form.commissionLevelTwo
-          },
-          {
-            grade: '3',
-            commission: that.form.commissionLevelThree
-          }
-        ]
+        var commodityDistributeList = []
+        if (that.form.distributed) {
+          commodityDistributeList = [
+            {
+              grade: '1',
+              commission: that.form.commissionLevelOne
+            },
+            {
+              grade: '2',
+              commission: that.form.commissionLevelTwo
+            },
+            {
+              grade: '3',
+              commission: that.form.commissionLevelThree
+            }
+          ]
+        }
 
         if (that.pageType === 'edit') {
+          commodityInfo.commodityStatus = '0'
           let data = {
             commodityInfo: commodityInfo,
             commodityImgList: commodityImgList,
@@ -1569,10 +1575,20 @@ export default {
             commodityDistributeList: commodityDistributeList
           }
           commodityEdit(data).then(res => {
-            this.$message.success('提交审核成功')
-            setTimeout(function() {
-              this.reload()
-            }, 2000)
+            that.$message.success('更新商品成功')
+            //展示商品二维码
+            var canvas = document.getElementById('canvas')
+            QRCode.toCanvas(
+              canvas,
+              'https://blog.csdn.net/weixin_42890953/article/details/82776760',
+              function(error) {
+                if (error) console.error(error)
+                console.log('QRCode success!')
+                that.loading = false
+                that.pageLoading = false
+                that.nextStep()
+              }
+            )
           })
         } else {
           let data = {
@@ -1583,10 +1599,7 @@ export default {
           }
           commodityNew(data).then(res => {
             console.log(res)
-            that.loading = false
-            that.pageLoading = false
             that.$message.success('创建商品成功')
-            that.nextStep()
             //展示商品二维码
             setTimeout(function() {
               var canvas = document.getElementById('canvas')
@@ -1595,6 +1608,9 @@ export default {
                 'https://blog.csdn.net/weixin_42890953/article/details/82776760',
                 function(error) {
                   if (error) console.error(error)
+                  that.loading = false
+                  that.pageLoading = false
+                  that.nextStep()
                   console.log('QRCode success!')
                 }
               )
@@ -1612,9 +1628,7 @@ export default {
       // 提交审核
       commodityStatusEdit(data).then(res => {
         that.$message.success('提交审核成功')
-        setTimeout(function() {
-          that.reload()
-        }, 2000)
+        that.checked = true
       })
     },
     stopUpload() {
@@ -1796,5 +1810,15 @@ export default {
   flex-direction: column;
   margin-top: 50px;
   align-items: center;
+}
+.qrCodeToolBar {
+  margin: 0 auto;
+  width: 600px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
+  margin-bottom: 100px;
 }
 </style>
