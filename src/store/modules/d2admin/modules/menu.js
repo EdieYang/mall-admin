@@ -7,7 +7,7 @@ import setting from '@/setting.js'
  * https://github.com/d2-projects/d2-admin/issues/209
  * @param {Array} menu 原始的菜单数据
  */
-function supplementMenuPath (menu) {
+function supplementMenuPath(menu) {
   return menu.map(e => ({
     ...e,
     path: e.path || uniqueId('d2-menu-empty-'),
@@ -24,6 +24,7 @@ export default {
     header: [],
     // 侧栏菜单
     aside: [],
+    fullAside: [],
     // 侧边栏收缩
     asideCollapse: setting.menu.asideCollapse
   },
@@ -33,7 +34,7 @@ export default {
      * @param {Object} context
      * @param {Boolean} collapse is collapse
      */
-    asideCollapseSet ({ state, dispatch }, collapse) {
+    asideCollapseSet({ state, dispatch }, collapse) {
       return new Promise(async resolve => {
         // store 赋值
         state.asideCollapse = collapse
@@ -52,7 +53,7 @@ export default {
      * 切换侧边栏展开和收缩
      * @param {Object} context
      */
-    asideCollapseToggle ({ state, dispatch }) {
+    asideCollapseToggle({ state, dispatch }) {
       return new Promise(async resolve => {
         // store 赋值
         state.asideCollapse = !state.asideCollapse
@@ -71,7 +72,7 @@ export default {
      * 从持久化数据读取侧边栏展开或者收缩
      * @param {Object} context
      */
-    asideCollapseLoad ({ state, dispatch }) {
+    asideCollapseLoad({ state, dispatch }) {
       return new Promise(async resolve => {
         // store 赋值
         state.asideCollapse = await dispatch('d2admin/db/get', {
@@ -91,7 +92,7 @@ export default {
      * @param {Object} state state
      * @param {Array} menu menu setting
      */
-    headerSet (state, menu) {
+    headerSet(state, menu) {
       // store 赋值
       state.header = supplementMenuPath(menu)
     },
@@ -100,9 +101,14 @@ export default {
      * @param {Object} state state
      * @param {Array} menu menu setting
      */
-    asideSet (state, menu) {
+    asideSet(state, menu) {
       // store 赋值
       state.aside = supplementMenuPath(menu)
+    },
+    fullAsideSet(state, menu) {
+      // store 赋值
+      state.fullAside = menu
+      state.aside = menu
     }
   }
 }
