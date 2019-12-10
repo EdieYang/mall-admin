@@ -36,16 +36,20 @@ function errorLog(error) {
 const service = axios.create({
   // baseURL: process.env.VUE_APP_API,
   baseURL: "",
-  timeout: 10000 // 请求超时时间
+  timeout: 20000 // 请求超时时间
 })
 
 // 请求拦截器
 service.interceptors.request.use(
   config => {
-    // 在请求发送之前做一些处理
-    const token = util.cookies.get('token');
-    // 让每个请求携带token-- ['X-Token']为自定义key 请根据实际情况自行修改
-    config.headers['X-Token'] = token;
+     // 在请求发送之前做一些处理
+     if (!(/^https:\/\/|http:\/\//.test(config.url))) {
+      const token = util.cookies.get('token')
+      if (token && token !== 'undefined') {
+        // 让每个请求携带token-- ['Authorization']为自定义key 请根据实际情况自行修改
+        config.headers['Authorization'] = 'Bearer ' + token
+      }
+    }
     return config
   },
   error => {
