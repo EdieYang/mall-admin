@@ -46,100 +46,100 @@ const frameIn = [
         component: _import('system/function/redirect')
       }
     ]
-  },
-  {
-    path: '/shop',
-    redirect: { name: 'index' },
-    component: layoutHeaderAside,
-    children: [
-      {
-        path: 'shop/index',
-        name: 'shopList',
-        meta: {
-          title: '商家列表',
-          auth: true
-        },
-        component: _import('shop/shop/index')
-      },
-      {
-        path: 'shop/new',
-        name: 'shopDetail',
-        meta: {
-          title: '商家信息',
-          auth: true
-        },
-        component: _import('shop/shop/new')
-      },
-      {
-        path: 'businessArea/index',
-        name: 'businessAreaList',
-        meta: {
-          title: '商圈信息',
-          auth: true
-        },
-        component: _import('shop/businessArea/index')
-      },
-      {
-        path: 'shopSysUser/shopIndex',
-        name: 'shopSysUserList',
-        meta: {
-          title: '商家管理员信息',
-          auth: true
-        },
-        component: _import('shop/shopSysUser/shopIndex')
-      },
-      {
-        path: 'shopSysUser/index',
-        name: 'shopsSysUserList',
-        meta: {
-          title: '商家管理员列表',
-          auth: true
-        },
-        component: _import('shop/shopSysUser/index')
-      }
-    ]
-  },
-  {
-    path: '/commodity',
-    redirect: { name: 'index' },
-    component: layoutHeaderAside,
-    children: [
-      {
-        path: 'commoditylist/index',
-        name: 'commodityList',
-        meta: {
-          title: '商品列表',
-          auth: true
-        },
-        component: _import('commodity/commoditylist/index')
-      },
-      {
-        path: 'commoditylist/new',
-        name: 'commodityDetail',
-        meta: {
-          title: '商品信息',
-          auth: true
-        },
-        component: _import('commodity/commoditylist/new')
-      }
-    ]
-  },
-  {
-    path: '/settings',
-    redirect: { name: 'index' },
-    component: layoutHeaderAside,
-    children: [
-      {
-        path: 'customerSupport/index',
-        name: 'customerSupport',
-        meta: {
-          title: '客服设置',
-          auth: true
-        },
-        component: _import('settings/customerSupport/index')
-      }
-    ]
   }
+  // {
+  //   path: '/shop',
+  //   redirect: { name: 'index' },
+  //   component: layoutHeaderAside,
+  //   children: [
+  //     {
+  //       path: 'shop/index',
+  //       name: 'shopList',
+  //       meta: {
+  //         title: '商家列表',
+  //         auth: true
+  //       },
+  //       component: _import('shop/shop/index')
+  //     },
+  //     {
+  //       path: 'shop/new',
+  //       name: 'shopDetail',
+  //       meta: {
+  //         title: '商家信息',
+  //         auth: true
+  //       },
+  //       component: _import('shop/shop/new')
+  //     },
+  //     {
+  //       path: 'businessArea/index',
+  //       name: 'businessAreaList',
+  //       meta: {
+  //         title: '商圈信息',
+  //         auth: true
+  //       },
+  //       component: _import('shop/businessArea/index')
+  //     },
+  //     {
+  //       path: 'shopSysUser/shopIndex',
+  //       name: 'shopSysUserList',
+  //       meta: {
+  //         title: '商家管理员信息',
+  //         auth: true
+  //       },
+  //       component: _import('shop/shopSysUser/shopIndex')
+  //     },
+  //     {
+  //       path: 'shopSysUser/index',
+  //       name: 'shopsSysUserList',
+  //       meta: {
+  //         title: '商家管理员列表',
+  //         auth: true
+  //       },
+  //       component: _import('shop/shopSysUser/index')
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/commodity',
+  //   redirect: { name: 'index' },
+  //   component: layoutHeaderAside,
+  //   children: [
+  //     {
+  //       path: 'commoditylist/index',
+  //       name: 'commodityList',
+  //       meta: {
+  //         title: '商品列表',
+  //         auth: true
+  //       },
+  //       component: _import('commodity/commoditylist/index')
+  //     },
+  //     {
+  //       path: 'commoditylist/new',
+  //       name: 'commodityDetail',
+  //       meta: {
+  //         title: '商品信息',
+  //         auth: true
+  //       },
+  //       component: _import('commodity/commoditylist/new')
+  //     }
+  //   ]
+  // },
+  // {
+  //   path: '/settings',
+  //   redirect: { name: 'index' },
+  //   component: layoutHeaderAside,
+  //   children: [
+  //     {
+  //       path: 'customerSupport/index',
+  //       name: 'customerSupport',
+  //       meta: {
+  //         title: '客服设置',
+  //         auth: true
+  //       },
+  //       component: _import('settings/customerSupport/index')
+  //     }
+  //   ]
+  // }
 ]
 
 /**

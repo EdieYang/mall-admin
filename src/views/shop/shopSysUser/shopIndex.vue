@@ -76,7 +76,7 @@ var pageSize = 10
 var userId = ''
 
 export default {
-  name: "shopList",
+  name: "shopSysUser",
   data() {
     let validMobile = (rule, value, callback) => {
       let reg = /^1(3|4|5|7|8)\d{9}$/;

@@ -18,7 +18,7 @@ import menuAside from '@/menu/aside'
 import { frameInRoutes } from '@/router/routes'
 //路由与组件映射关系
 import routerMapComponents from '@/routerMapComponents'
-import * as userService from "@/api/sys/user";
+// import * as userService from "@/api/sys/user";
 
 Vue.use(VueRouter)
 
@@ -52,7 +52,8 @@ let fetchPermissionInfo = async () => {
   }
 
   try {
-    let userPermissionInfo = await userService.getUserPermissionInfo()
+    let respMock='{"userName":"MenuManager","userRoles":["R_MENUADMIN"],"userPermissions":["p_menu_view","p_menu_edit","p_menu_menu"],"accessMenus":[{"title":"设置","path":"/system","icon":"cogs","children":[{"title":"客服设置","path":"/settings/customerSupport/index","icon":"th-list"}]},{"title":"商户管理","path":"/shop","icon":"address-book-o","children":[{"path":"/shop/shop/index","title":"商家列表","icon":""},{"path":"/shop/businessArea/index","title":"商圈列表","icon":""},{"path":"/shop/shopSysUser/index","title":"商家管理员列表","icon":""}]},{"title":"商品管理","path":"/commodity","icon":"shopping-bag","children":[{"path":"/commodity/commoditylist/index","title":"商品列表","icon":""}]}],"accessRoutes":[{"name":"shop","path":"/shop","component":"layoutHeaderAside","componentPath":"layout/header-aside/layout","meta":{"title":"商户管理","cache":true},"children":[{"name":"shopList","path":"shop/index","component":"shopList","meta":{"title":"商家列表","cache":true}},{"name":"shopDetail","path":"shop/new","component":"shopDetail","meta":{"title":"商家信息","cache":true}},{"name":"businessAreaList","path":"businessArea/index","component":"businessAeraList","meta":{"title":"商圈信息","cache":true}},{"name":"shopSysUser","path":"shopSysUser/shopIndex","component":"shopSysUser","meta":{"title":"商家管理员信息","cache":true}},{"name":"shopSysUserList","path":"shopSysUser/index","component":"shopSysUserList","meta":{"title":"商家管理员列表","cache":true}}]},{"name":"commodity","path":"/commodity","component":"layoutHeaderAside","componentPath":"layout/header-aside/layout","meta":{"title":"商品管理","cache":true},"children":[{"name":"commodityList","path":"commoditylist/index","component":"commodityList","meta":{"title":"商品列表","cache":true}},{"name":"commodityDetail","path":"commoditylist/new","component":"commodityDetail","meta":{"title":"商品信息","cache":true}}]},{"name":"settings","path":"/settings","component":"layoutHeaderAside","componentPath":"layout/header-aside/layout","meta":{"title":"设置","cache":true},"children":[{"name":"customerSupport","path":"customerSupport/index","component":"customerSupport","meta":{"title":"客服设置","cache":true}}]}],"accessInterfaces":[],"isAdmin":0,"avatarUrl":"https://api.adorable.io/avatars/85/abott@adorable.png"}'
+    let userPermissionInfo = JSON.parse(respMock)
     permissionMenu = userPermissionInfo.accessMenus
     permissionRouter = userPermissionInfo.accessRoutes
     permission.functions = userPermissionInfo.userPermissions
@@ -93,18 +94,20 @@ let whiteList = ['/login']
  */
 router.beforeEach(async (to, from, next) => {
   // 确认已经加载多标签页数据 https://github.com/d2-projects/d2-admin/issues/201
-  await store.dispatch('d2admin/page/isLoaded')
+  // await store.dispatch('d2admin/page/isLoaded')
   // 确认已经加载组件尺寸设置 https://github.com/d2-projects/d2-admin/issues/198
-  await store.dispatch('d2admin/size/isLoaded')
+  // await store.dispatch('d2admin/size/isLoaded')
   // 进度条
   NProgress.start()
   // 关闭搜索面板
   store.commit('d2admin/search/set', false)
-  const token = util.cookies.get('token')
+  // const token = util.cookies.get('token')
+  const token='111'
   if (whiteList.indexOf(to.path) === -1) {
     // 这里暂时将cookie里是否存有token作为验证是否登录的条件
     // 请根据自身业务需要修改
     if (token && token !== 'undefined') {
+      debugger
       //拉取权限信息
       if (!isFetchPermissionInfo) {
         await fetchPermissionInfo();

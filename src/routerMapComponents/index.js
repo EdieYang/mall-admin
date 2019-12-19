@@ -3,11 +3,16 @@ import layoutHeaderAside from '@/layout/header-aside'
 
 let componentMaps = {
     "layoutHeaderAside": layoutHeaderAside,
-    "menu": () => import(/* webpackChunkName: "menu" */'@/pages/sys/menu'),
-    "route": () => import(/* webpackChunkName: "route" */'@/pages/sys/route'),
-    "role": () => import(/* webpackChunkName: "role" */'@/pages/sys/role'),
-    "user": () => import(/* webpackChunkName: "user" */'@/pages/sys/user'),
-    "interface": () => import(/* webpackChunkName: "interface" */'@/pages/sys/interface'),
+    "shopList": () => import('@/views/shop/shop/index'),
+    "shopDetail": () => import('@/views/shop/shop/new'),
+    "businessAreaList": () => import('@/views/shop/businessArea/index'),
+    "shopSysUser": () => import('@/views/shop/shopSysUser/shopIndex'),
+    "shopSysUserList": () => import('@/views/shop/shopSysUser/index'),
+    "commodityList": () => import('@/views/commodity/commoditylist/index'),
+    "commodityDetail": () => import('@/views/commodity/commoditylist/new'),
+    "customerSupport": () => import('@/views/settings/customerSupport/index'),
+
+
 }
 files.keys().forEach((key) => {
     if (key === './index.js') return
