@@ -11,7 +11,10 @@ let componentMaps = {
     "commodityList": () => import('@/views/commodity/commoditylist/index'),
     "commodityDetail": () => import('@/views/commodity/commoditylist/new'),
     "customerSupport": () => import('@/views/settings/customerSupport/index'),
-
+    "menu": () => import(/* webpackChunkName: "menu" */'@/views/sys/menu'),
+    "route": () => import(/* webpackChunkName: "route" */'@/views/sys/route'),
+    "role": () => import(/* webpackChunkName: "role" */'@/views/sys/role'),
+    "user": () => import(/* webpackChunkName: "user" */'@/views/sys/user'),
 
 }
 files.keys().forEach((key) => {
