@@ -64,7 +64,7 @@
   </el-dialog>
 </template>
 <script>
-import * as userService from "@/api/sys/user"
+import * as roleService from "@/api/sys/role"
 export default {
   name: "roleUser",
   props: {
@@ -111,7 +111,7 @@ export default {
         userAccount: this.searchForm.userAccount,
         roleId: this.role.roleId
       }
-      userService.getUserPageByRoleId(query).then(data => {
+      roleService.getUserPageByRoleId(query).then(data => {
         this.tableData = data.list
         this.page.total = data.total
       })
@@ -137,7 +137,7 @@ export default {
     },
     modifyRoleUser(userId, action) {
       if (action == 1) {
-        userService
+        roleService
           .crtUserRole({
             roleId: this.role.roleId,
             userId: userId
@@ -152,7 +152,7 @@ export default {
             this.getTableData()
           })
       } else {
-        userService
+        roleService
           .delUserRole({
             roleId: this.role.roleId,
             userId: userId

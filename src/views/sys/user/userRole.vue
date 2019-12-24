@@ -63,7 +63,6 @@
 </template>
 <script>
 import * as roleService from "@/api/sys/role"
-import * as userService from "@/api/sys/user"
 export default {
   name: "userRole",
   props: {
@@ -136,8 +135,8 @@ export default {
     },
     modifyRoleUser(roleId, action) {
       if (action == 1) {
-        userService
-          .crtRoleUser({
+        roleService
+          .crtUserRole({
             roleId: roleId,
             userId: this.user.userId
           })
@@ -151,8 +150,8 @@ export default {
             this.getTableData()
           })
       } else {
-        userService
-          .delRoleUser({
+        roleService
+          .delUserRole({
             roleId: roleId,
             userId: this.user.userId
           })

@@ -37,8 +37,30 @@ export function delRole(data) {
 }
 export function getRolePagByUserId(data) {
   return request({
-    url: '/api/sys/role/page',
+    url: '/api/sys/role/userRole/page',
     method: 'get',
+    params: data
+  })
+}
+
+export function getUserPageByRoleId(data) {
+  return request({
+    url: '/api/sys/role/user/page',
+    method: 'get',
+    params: data
+  })
+}
+export function crtUserRole(data) {
+  return request({
+    url: '/api/sys/role/user',
+    method: 'post',
+    params: data
+  })
+}
+export function delUserRole(data) {
+  return request({
+    url: '/api/sys/role/user',
+    method: 'delete',
     params: data
   })
 }
