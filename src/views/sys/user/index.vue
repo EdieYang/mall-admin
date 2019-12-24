@@ -1,39 +1,16 @@
 <template>
   <d2-container>
     <template slot="header">
-      <el-form
-        :inline="true"
-        :model="searchForm"
-        ref="searchForm"
-        size="mini"
-        style="margin-bottom: -18px;"
-      >
-        <el-form-item
-          label="名称"
-          prop="name"
-        >
-          <el-input
-            v-model="searchForm.name"
-            placeholder="名称"
-            style="width: 100px;"
-          />
+      <el-form :inline="true" :model="searchForm" ref="searchForm" size="mini" style="margin-bottom: -18px;">
+        <el-form-item label="账号" prop="userAccount">
+          <el-input v-model="searchForm.userAccount" placeholder="请输入账号" style="width: 100px;" />
         </el-form-item>
 
-        <el-form-item
-          label="邮箱"
-          prop="email"
-        >
-          <el-input
-            v-model="searchForm.email"
-            placeholder="邮箱"
-            style="width: 120px;"
-          />
+        <el-form-item label="用户名" prop="userName">
+          <el-input v-model="searchForm.userName" placeholder="请输入用户名" style="width: 120px;" />
         </el-form-item>
         <el-form-item>
-          <el-button
-            type="primary"
-            @click="handleSearchFormSubmit"
-          >
+          <el-button type="primary" @click="handleSearchFormSubmit">
             <d2-icon name="search" /> 查询
           </el-button>
         </el-form-item>
@@ -45,133 +22,57 @@
         </el-form-item>
       </el-form>
     </template>
-    <el-button
-      type="primary"
-      size="mini"
-      icon="el-icon-circle-plus"
-      @click="add"
-    >
+    <el-button type="primary" size="mini" icon="el-icon-circle-plus" @click="add">
       新增
     </el-button>
-    <el-button
-      v-if="multipleSelection.length>0"
-      type="danger"
-      size="mini"
-      icon="el-icon-delete"
-      @click="batchDel"
-    >
+    <el-button v-if="multipleSelection.length>0" type="danger" size="mini" icon="el-icon-delete" @click="batchDel">
       删除
     </el-button>
-    <el-table
-      :data="tableData"
-      v-loading="loading"
-      size="small"
-      stripe
-      highlight-current-row
-      style="width: 100%;"
-      @selection-change="handleSelectionChange"
-      @sort-change="handleSortChange"
-    >
+    <el-table :data="tableData" v-loading="loading" size="small" stripe highlight-current-row style="width: 100%;" @selection-change="handleSelectionChange" @sort-change="handleSortChange">
 
-      <el-table-column
-        type="selection"
-        width="55"
-      >
+      <el-table-column type="selection" width="55">
       </el-table-column>
-      <el-table-column
-        label="账号名称"
-        prop="name"
-        sortable="custom"
-      >
+      <el-table-column label="账号名称" prop="userAccount" sortable="custom">
         <template slot-scope="scope">
-          {{scope.row.name}}
+          {{scope.row.userAccount}}
         </template>
       </el-table-column>
 
-      <el-table-column
-        label="用户名称"
-        prop="trueName"
-        sortable="custom"
-        :show-overflow-tooltip="true"
-      >
+      <el-table-column label="用户名称" prop="userName" sortable="custom" :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          {{scope.row.trueName}}
+          {{scope.row.userName}}
         </template>
       </el-table-column>
-      <el-table-column
-        label="邮箱"
-        prop="email"
-        sortable="custom"
-        :show-overflow-tooltip="true"
-      >
+      <el-table-column label="邮箱" prop="email" sortable="custom" :show-overflow-tooltip="true">
         <template slot-scope="scope">
           {{scope.row.email}}
         </template>
       </el-table-column>
-      <el-table-column
-        label="phone"
-        :show-overflow-tooltip="true"
-      >
+      <el-table-column label="手机号" :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          {{scope.row.phone}}
+          {{scope.row.mobilePhone}}
         </template>
       </el-table-column>
-      <el-table-column
-        fixed="right"
-        label="操作"
-        align="center"
-      >
+      <el-table-column label="创建时间" :show-overflow-tooltip="true">
         <template slot-scope="scope">
-          <el-button
-            type="primary"
-            title="编辑"
-            size="mini"
-            icon="el-icon-edit"
-            circle
-            @click="openEditForm(scope.row)"
-          ></el-button>
-          <el-button
-            type="danger"
-            title="删除"
-            size="mini"
-            icon="el-icon-delete"
-            circle
-            @click="del(scope.row.id)"
-          ></el-button>
-          <el-button
-            type="warning"
-            title="角色列表"
-            size="mini"
-            icon="el-icon-share"
-            circle
-            @click="openUserRoleDialog(scope.row)"
-          ></el-button>
+          {{scope.row.createDate}}
+        </template>
+      </el-table-column>
+      <el-table-column fixed="right" label="操作" align="center">
+        <template slot-scope="scope">
+          <el-button type="primary" title="编辑" size="mini" icon="el-icon-edit" circle @click="openEditForm(scope.row)"></el-button>
+          <el-button type="danger" title="删除" size="mini" icon="el-icon-delete" circle @click="del(scope.row.userId)"></el-button>
+          <el-button type="warning" title="角色列表" size="mini" icon="el-icon-share" circle @click="openUserRoleDialog(scope.row)"></el-button>
         </template>
       </el-table-column>
 
     </el-table>
     <template slot="footer">
-      <el-pagination
-        :current-page="page.current"
-        :page-size="page.size"
-        :total="page.total"
-        :page-sizes="[1,100, 200, 300, 400]"
-        layout="total, sizes, prev, pager, next, jumper"
-        style="margin: -10px;"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      >
+      <el-pagination :current-page="page.current" :page-size="page.size" :total="page.total" :page-sizes="[1,100, 200, 300, 400]" layout="total, sizes, prev, pager, next, jumper" style="margin: -10px;" @size-change="handleSizeChange" @current-change="handleCurrentChange">
       </el-pagination>
     </template>
-    <edit-form
-      :user="user"
-      v-model="editFormVisible"
-      @submit="getTableData"
-    />
-    <user-role
-      :user="user"
-      v-model="userRoleDialogVisible"
-    />
+    <edit-form :user="user" v-model="editFormVisible" @submit="getTableData" />
+    <user-role :user="user" v-model="userRoleDialogVisible" />
   </d2-container>
 </template>
 <script>
@@ -184,8 +85,8 @@ export default {
   data() {
     return {
       searchForm: {
-        name: "",
-        email: ""
+        userName: "",
+        userAccount: ""
       },
       loading: false,
       tableData: [],
@@ -210,15 +111,14 @@ export default {
   methods: {
     getTableData() {
       let query = {
-        pageIndex: this.page.current,
+        pageNum: this.page.current,
         pageSize: this.page.size,
-        sortBy: this.sort.prop,
-        descending: this.sort.order === "descending",
-        filter: this.searchForm
+        userName: this.searchForm.userName,
+        userAccount: this.searchForm.userAccount
       };
-      userService.getUserPagedList(query).then(data => {
-        this.tableData = data.rows;
-        this.page.total = data.totalCount;
+      userService.getUserPage(query).then(data => {
+        this.tableData = data.list;
+        this.page.total = data.total;
       });
     },
     handleSearchFormSubmit() {
@@ -276,7 +176,7 @@ export default {
         confirmButtonText: "删除",
         cancelButtonText: "取消"
       }).then(() => {
-        userService.delUser(id).then(() => {
+        userService.delUser({ userId: id }).then(() => {
           this.getTableData();
         });
       });

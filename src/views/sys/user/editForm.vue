@@ -1,51 +1,23 @@
 <template>
-  <el-dialog
-    title="用户信息"
-    :visible.sync="dialogVisible"
-    @opened="dialogOpen"
-  >
-    <el-form
-      ref="form"
-      :model="form"
-      label-width="80px"
-      size="small"
-    >
-      <el-form-item
-        prop="name"
-        label="账号"
-        :rules="[{ required: true, message: '不能为空'}]"
-      >
-        <el-input v-model="form.name"></el-input>
+  <el-dialog title="用户信息" :visible.sync="dialogVisible" @opened="dialogOpen">
+    <el-form ref="form" :model="form" label-width="80px" size="small">
+      <el-form-item prop="userAccount" label="账号" :rules="[{ required: true, message: '不能为空'}]">
+        <el-input v-model="form.userAccount"></el-input>
       </el-form-item>
-      <el-form-item
-        prop="trueName"
-        label="用户名称"
-        :rules="[{ required: true, message: '不能为空'}]"
-      >
-        <el-input v-model="form.trueName"></el-input>
+      <el-form-item prop="userName" label="用户名称" :rules="[{ required: true, message: '不能为空'}]">
+        <el-input v-model="form.userName"></el-input>
       </el-form-item>
-      <el-form-item
-        prop="email"
-        label="邮箱"
-      >
+      <el-form-item prop="email" label="邮箱">
         <el-input v-model="form.email"></el-input>
       </el-form-item>
-      <el-form-item
-        prop="phone"
-        label="phone"
-      >
-        <el-input v-model="form.phone"></el-input>
+      <el-form-item prop="mobilePhone" label="phone">
+        <el-input v-model="form.mobilePhone" type="text" maxlength="11"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button
-          type="primary"
-          :loading="loading"
-          @click="saveUser"
-        >保存</el-button>
+        <el-button type="primary" :loading="loading" @click="saveUser">保存</el-button>
         <el-button @click="close">取消</el-button>
       </el-form-item>
     </el-form>
-
   </el-dialog>
 
 </template>
@@ -80,12 +52,12 @@ export default {
   methods: {
     dialogOpen() {
       this.$refs.form.resetFields();
-      if (this.user.id) {
-        userService.getUser(this.user.id).then(data => {
+      if (this.user.userId) {
+        userService.getUser({ userId: this.user.userId }).then(data => {
           let form = {};
-          form.name = data.name;
-          form.trueName = data.trueName;
-          form.phone = data.phone;
+          form.userAccount = data.userAccount;
+          form.userName = data.userName;
+          form.mobilePhone = data.mobilePhone;
           form.email = data.email;
           this.form = form;
         });
@@ -97,15 +69,32 @@ export default {
       this.$refs["form"].validate(valid => {
         if (valid) {
           this.loading = true;
-          userService
-            .saveUser({ ...this.form, id: this.user.id })
-            .then(data => {
-              this.loading = false;
-              this.dialogVisible = false;
-              this.$emit("submit");
-            });
+          let req = {
+            userId: this.user.userId,
+            userAccount: this.form.userAccount,
+            userName: this.form.userName,
+            mobilePhone: this.form.mobilePhone,
+            email: this.form.email
+          }
+          if (this.user.userId != '' && typeof this.user.userId != 'undefined') {
+            userService
+              .uptUser(req)
+              .then(data => {
+                this.loading = false;
+                this.dialogVisible = false;
+                this.$emit("submit");
+              });
+          } else {
+            userService
+              .saveUser(req)
+              .then(data => {
+                this.loading = false;
+                this.dialogVisible = false;
+                this.$emit("submit");
+              });
+          }
         } else {
-          return false;
+          return
         }
       });
     },

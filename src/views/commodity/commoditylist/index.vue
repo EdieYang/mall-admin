@@ -251,9 +251,9 @@ export default {
       }
       shopList(data).then(res => {
         console.log(res)
-        this.data = res.rows
-        this.currentPage = res.page
-        this.total = res.total
+        this.data = res.list
+        this.currentPage = res.pageNum
+        this.total = res.size
       });
     },
     newCommodity () {
