@@ -27,15 +27,14 @@ const router = new VueRouter({
   routes
 })
 
-let permissionMenu, permissionRouter = []
+let permissionMenu,
+  permissionRouter = []
 
 let permission = {
   functions: [],
   roles: [],
   isAdmin: false
 }
-
-
 
 //标记是否已经拉取权限信息
 let isFetchPermissionInfo = false
@@ -52,24 +51,22 @@ let fetchPermissionInfo = async () => {
   }
 
   try {
-    let respMock='{"userName":"MenuManager","userRoles":["R_MENUADMIN"],"userPermissions":["p_menu_view","p_menu_edit","p_menu_menu"],"accessMenus":[{"id":"2bf39892-f047-44b1-88d3-ccd7ea5c8c45","parentId":0,"title":"系统","path":"/system","icon":"cogs","sort":"1","type":1,"children":[{"id":"1f3ea5ba-0d67-4710-b75c-52a267296b85","parentId":"52500348-50f0-4327-a898-9e4b9893f1a9","title":"菜单管理","path":"/system/menu","icon":"th-list","sort":"1","type":1},{"id":"6db38bfe-9ad0-4db4-a9be-28082741ef20","parentId":"52500348-50f0-4327-a898-9e4b9893f1a9","path":"/system/route","title":"路由管理","type":1,"permission":"p_route_menu","sort":"2","icon":"share-alt-square"},{"id":"1a74ac59-001c-4914-874e-6dbefe33415c","parentId":"52500348-50f0-4327-a898-9e4b9893f1a9","title":"角色管理","path":"/system/role","type":1,"sort":"3","icon":"users"},{"id":"d0d47bda-ab26-4909-a7f2-74bc2591a357","parentId":"52500348-50f0-4327-a898-9e4b9893f1a9","title":"用户管理","path":"/system/user","sort":"4","type":1,"icon":"user"}]}],"accessRoutes":[{"id":"3af738f0-0792-4f34-aae9-3339d0ab12a7","parentId":0,"name":"System","path":"/system","permission":"","component":"layoutHeaderAside","componentPath":"layout/header-aside/layout","sort":"1","isLock":false,"children":[{"id":"aa4c13f7-f3eb-4d1e-aac2-c2b2f7f8d296","parentId":"3af738f0-0792-4f34-aae9-3339d0ab12a7","name":"MenuPage","path":"/system/menu","component":"menu","componentPath":"pages/sys/menu/index","sort":"2","children":[],"meta":{"title":"菜单管理","cache":true}},{"id":"618e2e9c-8afe-4c64-b486-a4b08c752a81","parentId":"3af738f0-0792-4f34-aae9-3339d0ab12a7","name":"RoutePage","path":"/system/route","component":"route","componentPath":"pages/sys/route/index","sort":"3","children":[],"meta":{"title":"路由管理","cache":true}},{"id":"67a76a8f-c765-4015-bebd-03edc3170e63","parentId":"3af738f0-0792-4f34-aae9-3339d0ab12a7","name":"RolePage","path":"/system/role","component":"role","sort":"3","componentPath":"pages/sys/role/index","children":[],"meta":{"title":"角色管理","cache":true}},{"id":"58c5bc63-dfdc-413c-9bd6-b827ef06203e","parentId":"3af738f0-0792-4f34-aae9-3339d0ab12a7","componentPath":"pages/sys/user/index","sort":"4","component":"user","path":"/system/user","name":"UserPage","children":[],"meta":{"title":"用户管理","cache":true}},{"id":"d8808450-aa31-4a4a-817d-e49c8eee983b","parentId":"3af738f0-0792-4f34-aae9-3339d0ab12a7","name":"InterfacePage","path":"/system/interface","component":"interface","sort":"5","children":[],"meta":{"title":"接口管理"}}],"meta":{"title":"系统设置","cache":true}}],"accessInterfaces":[],"isAdmin":0,"avatarUrl":"https://api.adorable.io/avatars/85/abott@adorable.png"}'
+    let respMock =
+      '{"userName":"MenuManager","userRoles":["R_MENUADMIN"],"userPermissions":["p_menu_view","p_menu_edit","p_menu_menu"],"accessMenus":[{"id":"2bf39892-f047-44b1-88d3-ccd7ea5c8c45","parentId":0,"title":"系统","path":"/system","icon":"cogs","sort":"1","type":1,"children":[{"id":"1f3ea5ba-0d67-4710-b75c-52a267296b85","parentId":"52500348-50f0-4327-a898-9e4b9893f1a9","title":"菜单管理","path":"/system/menu","icon":"th-list","sort":"1","type":1},{"id":"6db38bfe-9ad0-4db4-a9be-28082741ef20","parentId":"52500348-50f0-4327-a898-9e4b9893f1a9","path":"/system/route","title":"路由管理","type":1,"permission":"p_route_menu","sort":"2","icon":"share-alt-square"},{"id":"1a74ac59-001c-4914-874e-6dbefe33415c","parentId":"52500348-50f0-4327-a898-9e4b9893f1a9","title":"角色管理","path":"/system/role","type":1,"sort":"3","icon":"users"},{"id":"d0d47bda-ab26-4909-a7f2-74bc2591a357","parentId":"52500348-50f0-4327-a898-9e4b9893f1a9","title":"用户管理","path":"/system/user","sort":"4","type":1,"icon":"user"}]}],"accessRoutes":[{"id":"3af738f0-0792-4f34-aae9-3339d0ab12a7","parentId":0,"name":"System","path":"/system","permission":"","component":"layoutHeaderAside","componentPath":"layout/header-aside/layout","sort":"1","isLock":false,"children":[{"id":"aa4c13f7-f3eb-4d1e-aac2-c2b2f7f8d296","parentId":"3af738f0-0792-4f34-aae9-3339d0ab12a7","name":"MenuPage","path":"/system/menu","component":"menu","componentPath":"pages/sys/menu/index","sort":"2","meta":{"title":"菜单管理","cache":true}},{"id":"618e2e9c-8afe-4c64-b486-a4b08c752a81","parentId":"3af738f0-0792-4f34-aae9-3339d0ab12a7","name":"RoutePage","path":"/system/route","component":"route","componentPath":"pages/sys/route/index","sort":"3","meta":{"title":"路由管理","cache":true}},{"id":"67a76a8f-c765-4015-bebd-03edc3170e63","parentId":"3af738f0-0792-4f34-aae9-3339d0ab12a7","name":"RolePage","path":"/system/role","component":"role","sort":"3","componentPath":"pages/sys/role/index","meta":{"title":"角色管理","cache":true}},{"id":"58c5bc63-dfdc-413c-9bd6-b827ef06203e","parentId":"3af738f0-0792-4f34-aae9-3339d0ab12a7","componentPath":"pages/sys/user/index","sort":"4","component":"user","path":"/system/user","name":"UserPage","meta":{"title":"用户管理","cache":true}},{"id":"d8808450-aa31-4a4a-817d-e49c8eee983b","parentId":"3af738f0-0792-4f34-aae9-3339d0ab12a7","name":"InterfacePage","path":"/system/interface","component":"interface","sort":"5","meta":{"title":"接口管理"}}],"meta":{"title":"系统设置","cache":true}}],"accessInterfaces":[],"isAdmin":0,"avatarUrl":"https://api.adorable.io/avatars/85/abott@adorable.png"}'
     let userPermissionInfo = JSON.parse(respMock)
     permissionMenu = userPermissionInfo.accessMenus
     permissionRouter = userPermissionInfo.accessRoutes
-    permission.functions = userPermissionInfo.userPermissions
     permission.roles = userPermissionInfo.userRoles
-    permission.interfaces = util.formatInterfaces(userPermissionInfo.accessInterfaces)
     permission.isAdmin = userPermissionInfo.isAdmin == 1
   } catch (ex) {
     console.log(ex)
   }
 
-
   formatRoutes(permissionRouter)
   let allMenuAside = [...menuAside, ...permissionMenu]
   let allMenuHeader = [...menuHeader, ...permissionMenu]
   //动态添加路由
-  router.addRoutes(permissionRouter);
+  router.addRoutes(permissionRouter)
   // 处理路由 得到每一级的路由设置
   store.commit('d2admin/page/init', [...frameInRoutes, ...permissionRouter])
   // 设置顶栏菜单
@@ -87,31 +84,25 @@ let fetchPermissionInfo = async () => {
 //免校验token白名单
 let whiteList = ['/login']
 
-
 /**
  * 路由拦截
  * 权限验证
  */
 router.beforeEach(async (to, from, next) => {
-  // 确认已经加载多标签页数据 https://github.com/d2-projects/d2-admin/issues/201
-  // await store.dispatch('d2admin/page/isLoaded')
-  // 确认已经加载组件尺寸设置 https://github.com/d2-projects/d2-admin/issues/198
-  // await store.dispatch('d2admin/size/isLoaded')
   // 进度条
   NProgress.start()
   // 关闭搜索面板
   store.commit('d2admin/search/set', false)
   // const token = util.cookies.get('token')
-  const token='111'
+  const token = '111'
   if (whiteList.indexOf(to.path) === -1) {
     // 这里暂时将cookie里是否存有token作为验证是否登录的条件
     // 请根据自身业务需要修改
     if (token && token !== 'undefined') {
-
       //拉取权限信息
       if (!isFetchPermissionInfo) {
-        await fetchPermissionInfo();
-        isFetchPermissionInfo = true;
+        await fetchPermissionInfo()
+        isFetchPermissionInfo = true
         next(to.path, true)
       } else {
         next()
@@ -129,7 +120,7 @@ router.beforeEach(async (to, from, next) => {
     if (to.name === 'login') {
       // 如果已经登录，则直接进入系统
       if (token && token !== undefined) {
-        next(from.path, true);
+        next(from.path, true)
         NProgress.done()
       } else {
         next()
