@@ -1,0 +1,92 @@
+<template>
+  <el-dialog :visible.sync="dialogVisible" @open="dialogOpen">
+    <div slot="title">维护
+      <el-tag>{{role.roleName}}</el-tag>&nbsp;菜单</div>
+    <el-input size="mini" placeholder="输入关键字进行过滤" v-model="filterText" style="padding-bottom: 5px"></el-input>
+    <el-tree ref="tree" show-checkbox check-on-click-node default-expand-all :props="{label: 'title'}" highlight-current node-key="id" :data="menuList" :filter-node-method="filterNode" :expand-on-click-node="false">
+      <span slot-scope="{ node, data }">
+        {{ node.label }}
+      </span>
+    </el-tree>
+    <div slot="footer" class="dialog-footer">
+      <el-button type="primary" :loading="loading" @click="saveRoleMenu">保存</el-button>
+      <el-button @click="close">取消</el-button>
+    </div>
+  </el-dialog>
+
+</template>
+<script>
+import * as roleService from "@/api/sys/role"
+import * as menuService from "@/api/sys/menu"
+export default {
+  name: "roleMenu",
+  props: {
+    role: Object,
+    value: Boolean
+  },
+  data() {
+    return {
+      loading: false,
+      dialogVisible: false,
+      filterText: "",
+      menuList: []
+    }
+  },
+  watch: {
+    value(val) {
+      this.dialogVisible = val
+    },
+    dialogVisible(val) {
+      this.$emit("input", val)
+    },
+    filterText(val) {
+      this.$refs.tree.filter(val)
+    }
+  },
+  methods: {
+    async dialogOpen() {
+      this.menuList = await menuService.getMenuList()
+      let req = {
+        roleId: this.role.roleId
+      }
+      let roleMenus = await menuService.getRoleMenus(req)
+      let roleMenuList = roleMenus.map(s => s.id)
+      this.$refs.tree.setCheckedKeys(roleMenuList)
+    },
+    filterNode(value, data) {
+      if (!value) return true
+      return data.title.indexOf(value) !== -1
+    },
+    saveRoleMenu() {
+      let checkedNodes = this.$refs.tree.getCheckedNodes(true, false)
+      let checkedMenus = []
+      for (let checked of checkedNodes) {
+        checkedMenus.push(checked.id)
+      }
+      let data = {
+        roleId: this.role.roleId,
+        menus: checkedMenus.join(',')
+      }
+      this.loading = true
+      roleService.saveRoleMenus(data).then(data => {
+        this.$notify({
+          title: "操作成功",
+          message: "已添加",
+          type: "success"
+        })
+        this.loading = false
+        this.dialogVisible = false
+      })
+    },
+    close() {
+      this.dialogVisible = false
+    }
+  }
+}
+</script>
+<style>
+.el-checkbox {
+  margin-bottom: 0px !important;
+}
+</style>
+

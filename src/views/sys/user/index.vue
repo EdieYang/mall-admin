@@ -163,7 +163,7 @@ export default {
       }).then(() => {
         userService
           .delUsers({
-            ids: JSON.stringify(this.multipleSelection.map(s => s.id))
+            ids: this.multipleSelection.map(s => s.userId).join(',')
           })
           .then(() => {
             this.getTableData();

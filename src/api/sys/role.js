@@ -35,6 +35,13 @@ export function delRole(data) {
     params: data
   })
 }
+export function delRoles(data) {
+  return request({
+    url: '/api/sys/role/batch',
+    method: 'delete',
+    params: data
+  })
+}
 export function getRolePagByUserId(data) {
   return request({
     url: '/api/sys/role/userRole/page',
@@ -42,7 +49,6 @@ export function getRolePagByUserId(data) {
     params: data
   })
 }
-
 export function getUserPageByRoleId(data) {
   return request({
     url: '/api/sys/role/user/page',
@@ -64,3 +70,13 @@ export function delUserRole(data) {
     params: data
   })
 }
+export function saveRoleMenus(data) {
+  return request({
+    url: '/api/sys/role/menu',
+    method: 'post',
+    params: data
+  })
+}
+
+
+

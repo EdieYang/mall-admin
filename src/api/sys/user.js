@@ -35,3 +35,10 @@ export function delUser(data) {
     params: data
   })
 }
+export function delUsers(data) {
+  return request({
+    url: '/api/sys/user/batch',
+    method: 'delete',
+    params: data
+  })
+}

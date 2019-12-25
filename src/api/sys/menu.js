@@ -34,3 +34,10 @@ export function delMenu(data) {
     params: data
   })
 }
+export function getRoleMenus(data) {
+  return request({
+    url: '/api/sys/menu/role',
+    method: 'get',
+    params: data
+  })
+}

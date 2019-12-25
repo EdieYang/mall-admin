@@ -132,9 +132,10 @@ export default {
         confirmButtonText: "删除",
         cancelButtonText: "取消"
       }).then(() => {
+        debugger
         permissionService
-          .delUsers({
-            ids: JSON.stringify(this.multipleSelection.map(s => s.id))
+          .delPermissoins({
+            ids: this.multipleSelection.map(s => s.id).join(',')
           })
           .then(() => {
             this.getTableData();

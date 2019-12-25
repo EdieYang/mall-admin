@@ -35,6 +35,13 @@ export function delPermission(data) {
     params: data
   })
 }
+export function delPermissoins(data) {
+  return request({
+    url: '/api/sys/permission/batch',
+    method: 'delete',
+    params: data
+  })
+}
 export function getPermissionPageByRoleId(data) {
   return request({
     url: '/api/sys/role/permission/page',
