@@ -10,6 +10,8 @@ import store from '@/store/index'
 import D2Crud from '@d2-projects/d2-crud'
 // MD5加密
 import md5 from 'js-md5'
+// SHA256加密
+import sha256 from 'js-sha256'
 // 时间格式转换
 import moment from 'moment'
 // 菜单和路由设置
@@ -27,6 +29,8 @@ Vue.component('vue-ueditor-wrap', VueUeditorWrap)
 
 // MD5加密
 Vue.prototype.$md5 = md5
+// Sha256加密
+Vue.prototype.$sha256 = sha256
 Vue.prototype.$moment = moment
 
 new Vue({
@@ -34,9 +38,7 @@ new Vue({
   store,
   i18n,
   render: h => h(App),
-  created() {
-
-  },
+  created() {},
   mounted() {
     // 展示系统信息
     this.$store.commit('d2admin/releases/versionShow')
@@ -51,7 +53,10 @@ new Vue({
     '$route.matched'(val) {
       let fullAside = this.$store.state.d2admin.menu.fullAside
       const _side = fullAside.filter(menu => menu.path === val[0].path)
-      this.$store.commit('d2admin/menu/asideSet', _side.length > 0 ? _side[0].children : [])
+      this.$store.commit(
+        'd2admin/menu/asideSet',
+        _side.length > 0 ? _side[0].children : []
+      )
     }
   }
 }).$mount('#app')

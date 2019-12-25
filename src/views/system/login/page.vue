@@ -2,8 +2,7 @@
   <div class="page-login">
     <div class="page-login--layer page-login--layer-area">
       <ul class="circles">
-        <li v-for="n in 10"
-            :key="n"></li>
+        <li v-for="n in 10" :key="n"></li>
       </ul>
     </div>
     <div class="page-login-layer">
@@ -12,34 +11,40 @@
         <div class="page-login-form">
           <p class="page-login-header">linkpets-mall</p>
           <p class="page-login-title">邻宠商城运营平台</p>
-          <el-form ref="loginForm"
-                   label-position="top"
-                   :rules="rules"
-                   :model="formLogin"
-                   class="login-form">
-            <el-form-item prop="username"
-                          label="账号">
-              <el-input class="form-input"
-                        type="text"
-                        size="medium"
-                        v-model="formLogin.username"
-                        placeholder="用户名">
+          <el-form
+            ref="loginForm"
+            label-position="top"
+            :rules="rules"
+            :model="formLogin"
+            class="login-form"
+          >
+            <el-form-item prop="username" label="账号">
+              <el-input
+                class="form-input"
+                type="text"
+                size="medium"
+                v-model="formLogin.username"
+                placeholder="用户名"
+              >
               </el-input>
             </el-form-item>
-            <el-form-item prop="password"
-                          label="密码">
-              <el-input class="form-input"
-                        type="password"
-                        size="medium"
-                        v-model="formLogin.password"
-                        :show-password="true"
-                        placeholder="密码">
+            <el-form-item prop="password" label="密码">
+              <el-input
+                class="form-input"
+                type="password"
+                size="medium"
+                v-model="formLogin.password"
+                :show-password="true"
+                placeholder="密码"
+              >
               </el-input>
             </el-form-item>
-            <el-button size="default"
-                       @click="submit"
-                       type="primary"
-                       class="button-login">
+            <el-button
+              size="default"
+              @click="submit"
+              type="primary"
+              class="button-login"
+            >
               登录
             </el-button>
           </el-form>
@@ -50,12 +55,11 @@
 </template>
 
 <script>
-// import dayjs from 'dayjs'
 import { mapActions } from 'vuex'
 import util from '@/libs/util'
-import { Login } from '@/api/login/loginApi.js'
+import * as loginService from '@/api/sys/login'
 export default {
-  data () {
+  data() {
     return {
       timeInterval: null,
       // time: dayjs().format('HH:mm:ss'),
@@ -92,51 +96,47 @@ export default {
       }
     }
   },
-  mounted () {
-
-  },
-  beforeDestroy () {
-
-  },
+  mounted() {},
+  beforeDestroy() {},
   methods: {
-    ...mapActions('d2admin/account', [
-      'login'
-    ]),
+    ...mapActions('d2admin/account', ['login']),
     /**
      * @description 接收选择一个用户快速登录的事件
      * @param {Object} user 用户信息
      */
-    handleUserBtnClick (user) {
-      this.formLogin.username = user.username;
-      this.formLogin.password = user.password;
+    handleUserBtnClick(user) {
+      this.formLogin.username = user.username
+      this.formLogin.password = user.password
       this.submit()
     },
     /**
      * @description 提交表单
      */
     // 提交登录信息
-    submit () {
-      this.$refs.loginForm.validate((valid) => {
+    submit() {
+      this.$refs.loginForm.validate(valid => {
         if (valid) {
           // 登录
           // 注意 这里的演示没有传验证码
           // 具体需要传递的数据请自行修改代码
           let userInfo = {
-            "userAccount": this.formLogin.username,
-            "password": this.$md5(this.formLogin.password)
-          };
-          console.log(this.$md5(this.formLogin.password))
-          Login(userInfo).then(res => {
-            console.log(res);
-            util.cookies.set('userId', res.userId);
+            userAccount: this.formLogin.username,
+            password: this.$sha256(this.formLogin.password)
+          }
+          console.log(this.$sha256(this.formLogin.password))
+          loginService.sysLogin(userInfo).then(res => {
+            console.log(res)
+            util.cookies.set('userId', res.userId)
+            util.cookies.set('token', res.token)
+            util.cookies.set('userName', res.userName)
             this.$router.push('/index')
-          });
+          })
         } else {
           // 登录表单校验失败
-          this.$message.error('表单校验失败，请检查')
+          this.$message.error('请输入完整账号密码！')
         }
       })
-    },
+    }
   }
 }
 </script>
@@ -200,7 +200,7 @@ export default {
   $backgroundColor: #fff;
   // ---
   background-color: $backgroundColor;
-  background-image: url("/image/local/login.jpg");
+  background-image: url('/image/local/login.jpg');
   background-repeat: no-repeat;
   height: 100%;
   background-size: auto 100%;

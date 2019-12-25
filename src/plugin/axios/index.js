@@ -35,29 +35,29 @@ function errorLog(error) {
 // 创建一个 axios 实例
 const service = axios.create({
   // baseURL: process.env.VUE_APP_API,
-  baseURL: "",
+  baseURL: '',
   timeout: 20000 // 请求超时时间
 })
 
 // 请求拦截器
 service.interceptors.request.use(
   config => {
-     // 在请求发送之前做一些处理
-     if (!(/^https:\/\/|http:\/\//.test(config.url))) {
+    // 在请求发送之前做一些处理
+    if (!/^https:\/\/|http:\/\//.test(config.url)) {
       const token = util.cookies.get('token')
       if (token && token !== 'undefined') {
         // 让每个请求携带token-- ['Authorization']为自定义key 请根据实际情况自行修改
-        config.headers['Authorization'] = 'Bearer ' + token
+        config.headers['Authorization'] = token
       }
     }
     return config
   },
   error => {
     // 发送失败
-    console.log(error);
+    console.log(error)
     return Promise.reject(error)
   }
-);
+)
 
 // 响应拦截器
 service.interceptors.response.use(
@@ -82,11 +82,20 @@ service.interceptors.response.use(
           return dataAxios.data
         case 40001:
           //登录账户不存在
-          errorCreate(`[ code: 40001 ] ${dataAxios.message}: ${response.config.url}`)
+          errorCreate(
+            `[ code: 40001 ] ${dataAxios.message}: ${response.config.url}`
+          )
           break
         case 40002:
           // 密码错误
-          errorCreate(`[ code: 40002 ] ${dataAxios.message}: ${response.config.url}`)
+          errorCreate(
+            `[ code: 40002 ] ${dataAxios.message}: ${response.config.url}`
+          )
+          break
+        case 40003:
+          // TOKEN验证失败
+          util.cookies.set('token', '')
+          errorCreate(`登录超时，请重新登录`)
           break
         default:
           // 不是正确的 code
@@ -98,18 +107,41 @@ service.interceptors.response.use(
   error => {
     if (error && error.response) {
       switch (error.response.status) {
-        case 400: error.message = '请求错误'; break
-        case 401: error.message = '未授权，请登录'; break
-        case 403: error.message = '拒绝访问'; break
-        case 404: error.message = `请求地址出错: ${error.response.config.url}`; break
-        case 408: error.message = '请求超时'; break
-        case 500: error.message = '服务器内部错误'; break
-        case 501: error.message = '服务未实现'; break
-        case 502: error.message = '网关错误'; break
-        case 503: error.message = '服务不可用'; break
-        case 504: error.message = '网关超时'; break
-        case 505: error.message = 'HTTP版本不受支持'; break
-        default: break
+        case 400:
+          error.message = '请求错误'
+          break
+        case 401:
+          error.message = '未授权，请登录'
+          break
+        case 403:
+          error.message = '拒绝访问'
+          break
+        case 404:
+          error.message = `请求地址出错: ${error.response.config.url}`
+          break
+        case 408:
+          error.message = '请求超时'
+          break
+        case 500:
+          error.message = '服务器内部错误'
+          break
+        case 501:
+          error.message = '服务未实现'
+          break
+        case 502:
+          error.message = '网关错误'
+          break
+        case 503:
+          error.message = '服务不可用'
+          break
+        case 504:
+          error.message = '网关超时'
+          break
+        case 505:
+          error.message = 'HTTP版本不受支持'
+          break
+        default:
+          break
       }
     }
     errorLog(error)

@@ -1,9 +1,16 @@
 import request from '@/plugin/axios'
 
-export function sysLogin (data) {
+export function sysLogin(data) {
   return request({
-    url: '/sys/login',
+    url: '/api/sys/login',
     method: 'get',
-    params:data
+    params: data
+  })
+}
+export function getSysUserPermission(data) {
+  return request({
+    url: '/api/sys/login/permission',
+    method: 'get',
+    params: data
   })
 }
