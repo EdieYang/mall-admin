@@ -200,7 +200,7 @@ export default {
       })
     },
     newShop() {
-      this.$router.push({ path: '/shop/shop/new', query: { type: 'new' } })
+      this.$router.push({ path: '/shop/new', query: { type: 'new' } })
     },
     edit(shopId) {
       this.$router.push({

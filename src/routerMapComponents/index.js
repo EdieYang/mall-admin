@@ -13,8 +13,7 @@ let componentMaps = {
   customerSupport: () => import('@/views/settings/customerSupport/index'),
   menu: () => import(/* webpackChunkName: "menu" */ '@/views/sys/menu'),
   route: () => import(/* webpackChunkName: "route" */ '@/views/sys/route'),
-  permission: () =>
-    import(/* webpackChunkName: "route" */ '@/views/sys/permission'),
+  permission: () =>import(/* webpackChunkName: "route" */ '@/views/sys/permission'),
   role: () => import(/* webpackChunkName: "role" */ '@/views/sys/role'),
   user: () => import(/* webpackChunkName: "user" */ '@/views/sys/user')
 }
