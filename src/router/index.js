@@ -8,6 +8,7 @@ import 'nprogress/nprogress.css'
 import store from '@/store/index'
 
 import util from '@/libs/util.js'
+import page from '@/store/modules/d2admin/modules/page'
 
 // 路由数据
 import routes from './routes'
@@ -23,7 +24,7 @@ import * as loginService from '@/api/sys/login'
 Vue.use(VueRouter)
 
 // 导出路由 在 main.js 里使用
-const router = new VueRouter({
+let router = new VueRouter({
   routes
 })
 
@@ -38,6 +39,21 @@ let permission = {
 
 //标记是否已经拉取权限信息
 let isFetchPermissionInfo = false
+
+let clearRouteAndTabs = () => {
+  let indexOpend = page.state.opened[0]
+  page.state.opened = []
+  page.state.opened.push(indexOpend)
+  if (page.state.pool.length != 0) {
+    let indexPool = page.state.pool[0]
+    page.state.pool = []
+    page.state.pool.push(indexPool)
+  }
+  const newRouter = new VueRouter({
+    routes: []
+  })
+  // router.matcher = newRouter.matcher
+}
 
 let fetchPermissionInfo = async () => {
   //处理动态添加的路由
@@ -82,8 +98,6 @@ let fetchPermissionInfo = async () => {
   store.commit('d2admin/search/init', allMenuHeader)
   // 设置权限信息
   store.commit('d2admin/permission/set', permission)
-  // 加载上次退出时的多页列表
-  store.dispatch('d2admin/page/openedLoad')
   await Promise.resolve()
 }
 //免校验token白名单
@@ -113,7 +127,6 @@ router.beforeEach(async (to, from, next) => {
       if (!isFetchPermissionInfo) {
         await fetchPermissionInfo()
         isFetchPermissionInfo = true
-        debugger
         next(to.path, true)
       } else {
         next()
@@ -130,6 +143,8 @@ router.beforeEach(async (to, from, next) => {
     }
   } else {
     if (to.name === 'login') {
+      isFetchPermissionInfo = false
+      clearRouteAndTabs()
       // 如果已经登录，则直接进入系统
       if (token && token !== undefined) {
         next(from.path, true)

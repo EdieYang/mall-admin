@@ -1,25 +1,44 @@
 <template>
   <el-dialog :visible.sync="dialogVisible" @open="dialogOpen">
-    <div slot="title">维护
-      <el-tag>{{role.roleName}}</el-tag>&nbsp;菜单</div>
-    <el-input size="mini" placeholder="输入关键字进行过滤" v-model="filterText" style="padding-bottom: 5px"></el-input>
-    <el-tree ref="tree" show-checkbox check-on-click-node default-expand-all :props="{label: 'title'}" highlight-current node-key="id" :data="menuList" :filter-node-method="filterNode" :expand-on-click-node="false">
+    <div slot="title">
+      维护 <el-tag>{{ role.roleName }}</el-tag
+      >&nbsp;菜单
+    </div>
+    <el-input
+      size="mini"
+      placeholder="输入关键字进行过滤"
+      v-model="filterText"
+      style="padding-bottom: 5px"
+    ></el-input>
+    <el-tree
+      ref="tree"
+      show-checkbox
+      check-on-click-node
+      default-expand-all
+      :props="{ label: 'title' }"
+      highlight-current
+      node-key="id"
+      :data="menuList"
+      :filter-node-method="filterNode"
+      :expand-on-click-node="false"
+    >
       <span slot-scope="{ node, data }">
         {{ node.label }}
       </span>
     </el-tree>
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary" :loading="loading" @click="saveRoleMenu">保存</el-button>
+      <el-button type="primary" :loading="loading" @click="saveRoleMenu"
+        >保存</el-button
+      >
       <el-button @click="close">取消</el-button>
     </div>
   </el-dialog>
-
 </template>
 <script>
-import * as roleService from "@/api/sys/role"
-import * as menuService from "@/api/sys/menu"
+import * as roleService from '@/api/sys/role'
+import * as menuService from '@/api/sys/menu'
 export default {
-  name: "roleMenu",
+  name: 'roleMenu',
   props: {
     role: Object,
     value: Boolean
@@ -28,7 +47,7 @@ export default {
     return {
       loading: false,
       dialogVisible: false,
-      filterText: "",
+      filterText: '',
       menuList: []
     }
   },
@@ -37,7 +56,7 @@ export default {
       this.dialogVisible = val
     },
     dialogVisible(val) {
-      this.$emit("input", val)
+      this.$emit('input', val)
     },
     filterText(val) {
       this.$refs.tree.filter(val)
@@ -70,9 +89,11 @@ export default {
       this.loading = true
       roleService.saveRoleMenus(data).then(data => {
         this.$notify({
-          title: "操作成功",
-          message: "已添加",
-          type: "success"
+          title: '操作成功',
+          message: '已添加',
+          type: 'success',
+          offset: 100,
+          duration: 1500
         })
         this.loading = false
         this.dialogVisible = false
@@ -89,4 +110,3 @@ export default {
   margin-bottom: 0px !important;
 }
 </style>
-

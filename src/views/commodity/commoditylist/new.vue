@@ -1065,7 +1065,7 @@ import QRCode from 'qrcode'
 var shopId = ''
 
 export default {
-  name: 'commodityDetail',
+  name: 'CommodityDetail',
   inject: ['reload'],
   data() {
     return {

@@ -122,7 +122,7 @@ var pageSize = 10
 var userId = ''
 
 export default {
-  name: "commodityList",
+  name: "CustomerSupport",
   data() {
     return {
       data: [],
