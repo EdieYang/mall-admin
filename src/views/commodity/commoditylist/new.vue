@@ -106,6 +106,7 @@
                     :action="actionUrl"
                     list-type="picture-card"
                     :data="commodityImgOssParam"
+                    :file-list="commodityImgFileList"
                     :on-preview="handlePictureCardPreview"
                     :on-remove="handleCommodityImageRemove"
                     :on-success="handleCommodityImageSuccess"
@@ -122,13 +123,14 @@
                 </el-form-item>
                 <el-form-item
                   label="商品展示图片"
-                  prop="commodityDisplayImg"
-                  ref="commodityDisplayImg"
+                  prop="displayImg"
+                  ref="displayImg"
                 >
                   <el-upload
                     :action="actionUrl"
                     list-type="picture-card"
                     :data="commodityImgOssParam"
+                    :file-list="commodityDisplayImgFileList"
                     :on-preview="handlePictureCardPreview"
                     :on-remove="handleDisplayRemove"
                     :on-success="handleDisplaySuccess"
@@ -762,6 +764,7 @@
                     :action="actionUrl"
                     list-type="picture-card"
                     :data="shareOssParam"
+                    :file-list="shareWapImgFileList"
                     :on-preview="handlePictureCardPreview"
                     :on-remove="handleShareWapImgRemove"
                     :on-success="handleShareWapImgSuccess"
@@ -785,6 +788,7 @@
                     :action="actionUrl"
                     list-type="picture-card"
                     :data="shareOssParam"
+                    :file-list="shareMiniImgFileList"
                     :on-preview="handlePictureCardPreview"
                     :on-remove="handleShareMiniImgRemove"
                     :on-success="handleShareMiniImgSuccess"
@@ -808,6 +812,7 @@
                     :action="actionUrl"
                     list-type="picture-card"
                     :data="shareOssParam"
+                    :file-list="sharePostFileList"
                     :on-preview="handlePictureCardPreview"
                     :on-remove="handleSharePostRemove"
                     :on-success="handleSharePostSuccess"
@@ -1050,15 +1055,8 @@
 </template>
 
 <script>
-import {
-  commodityId,
-  commodityTableList,
-  commodityNew,
-  commodityDetail,
-  commodityEdit,
-  commodityStatusEdit
-} from '@/api/commodity/commodityApi'
-import { customerSupportList } from '@/api/customerSupport/customerSupportApi'
+import * as commodityService from '@/api/commodity/commodity'
+import * as customerSupportService from '@/api/customerSupport/customerSupportApi'
 import { shopList } from '@/api/shop/shopApi'
 import util from '@/libs/util'
 import QRCode from 'qrcode'
@@ -1074,12 +1072,18 @@ export default {
       loadingUploadCommodityCheck: false,
       pageType: '',
       canUpload: true,
-      picPath: 'https://linkpets-mall-dev.oss-accelerate.aliyuncs.com',
+      picPath: util.picturePath,
       actionUrl: '/api/oss/upload',
       step: 1,
       checked: false,
       activeName: 'defaultSetting',
+      commodityId: '',
       customerSupportList: [],
+      commodityImgFileList: [],
+      commodityDisplayImgFileList: [],
+      shareWapImgFileList: [],
+      shareMiniImgFileList: [],
+      sharePostFileList: [],
       form: {
         commodityType: '0',
         commodityChannel: '0',
@@ -1088,8 +1092,9 @@ export default {
         distributed: false,
         commodityName: '',
         commodityImgList: [],
-        commodityDisplayImg: '',
+        displayImg: '',
         saleDate: [],
+        purchaseLimit:0,
         commodityRules: '',
         commodityUsage: '',
         refundType: '0',
@@ -1126,7 +1131,8 @@ export default {
             stock: 0
           }
         ],
-        createBy: ''
+        createBy: '',
+        updateBy: ''
       },
       shopList: [],
       stockWarnBoolean: false,
@@ -1183,7 +1189,7 @@ export default {
       dialogImageUrl: '',
       dialogVisible: false,
       commodityImgOssParam: {},
-      shareOssParam: { path: 'mall/share/wap' },
+      shareOssParam: {},
       formRules: {
         commodityName: [
           {
@@ -1196,7 +1202,7 @@ export default {
         commodityImgList: [
           { required: true, message: '请上传商品图片', trigger: 'change' }
         ],
-        commodityDisplayImg: [
+        displayImg: [
           { required: true, message: '请上传商品展示图片', trigger: 'change' }
         ],
         saleDate: [
@@ -1232,12 +1238,17 @@ export default {
   },
   mounted() {
     this.pageType = this.$route.query.type
+    this.form.commodityId = this.$route.query.commodityId
     if (this.pageType === 'edit') {
-      this.shopDetail()
+      this.getCommodityDetail()
+      this.form.updateBy = util.cookies.get('userId')
+    } else {
+      this.generateCommodityId()
+      this.form.createBy = util.cookies.get('userId')
+      this.form.updateBy = util.cookies.get('userId')
     }
     this.getCustomerSupportList()
     this.getShopList()
-    this.generateCommodityId()
   },
   methods: {
     nextStep() {
@@ -1249,6 +1260,151 @@ export default {
     stepOver(tagName) {
       this.activeName = tagName
     },
+    getCommodityDetail() {
+      var that = this
+      let req = {
+        commodityId: this.form.commodityId
+      }
+      commodityService.commodityDetail(req).then(res => {
+        let commodityInfo = res.commodityInfo
+        //组装form
+        this.form.commodityType = commodityInfo.commodityType
+        this.form.commodityChannel = commodityInfo.commodityChannel
+        this.form.commodityPattern = commodityInfo.commodityPattern
+        this.form.commodityName = commodityInfo.commodityName
+        this.form.displayImg=commodityInfo.displayImg
+        this.form.commodityRules = commodityInfo.commodityRules
+        this.form.commodityUsage = commodityInfo.commodityUsage
+        this.form.stock = commodityInfo.stock
+        this.form.saleCount = commodityInfo.saleCount
+        this.form.browseCount = commodityInfo.browseCount
+        this.form.purchaseLimit=commodityInfo.purchaseLimit
+        this.form.verificationType = commodityInfo.verificationType
+        this.form.commodityDetail = commodityInfo.commodityDetail
+        this.form.shareTitle = commodityInfo.shareTitle
+        this.form.shareInfo = commodityInfo.shareInfo
+        this.form.shareWapImg=commodityInfo.shareWapImg
+        this.form.shareMiniImg=commodityInfo.shareMiniImg
+        this.form.sharePost=commodityInfo.sharePost
+        this.form.purchasePoints = commodityInfo.purchasePoints
+        this.form.commodityDetail = commodityInfo.commodityDetail
+        this.form.multiSpec = commodityInfo.multiSpec == '1' ? true : false
+        this.form.distributed = commodityInfo.distributed == '1' ? true : false
+        this.form.commodityImgList = res.commodityImgList
+        this.form.commodityDistributeList = res.commodityDistributeList
+        //处理商品图片列表
+        this.commodityImgFileList = []
+        const imgList = res.commodityImgList
+        imgList.forEach(img => {
+          let imgItem = {
+            name: img.imgName,
+            url: this.picPath + img.imgUrl
+          }
+          this.commodityImgFileList.push(imgItem)
+        })
+        //处理商品展示缩略图
+        this.commodityDisplayImgFileList = []
+        const displayImg = commodityInfo.displayImg
+        let displayImgItem = {
+          name: 'displayImg',
+          url: this.picPath + displayImg
+        }
+        this.commodityDisplayImgFileList.push(displayImgItem)
+        //处理商品分享图片
+        this.shareWapImgFileList = []
+        const shareWapImg = commodityInfo.shareWapImg
+        let shareWapImgItem = {
+          name: 'shareWapImg',
+          url: this.picPath + shareWapImg
+        }
+        this.shareWapImgFileList.push(shareWapImgItem)
+
+        this.shareMiniImgFileList = []
+        const shareMiniImg = commodityInfo.shareMiniImg
+        if (shareMiniImg) {
+          let shareMiniImgItem = {
+            name: 'shareMiniImg',
+            url: this.picPath + shareMiniImg
+          }
+          this.shareMiniImgFileList.push(shareMiniImgItem)
+        }
+
+        this.sharePostFileList = []
+        const sharePostImg = commodityInfo.sharePost
+        let sharePostImgItem = {
+          name: 'sharePostImg',
+          url: this.picPath + sharePostImg
+        }
+        this.sharePostFileList.push(sharePostImgItem)
+
+        //转换价格数据（后台数据单位分，前端展示取元,保留小数点2位）
+        this.form.purchasePrice = commodityInfo.purchasePrice / 100.0
+        this.form.marketPrice = commodityInfo.marketPrice / 100.0
+        this.form.charityPrice = commodityInfo.charityPrice / 100.0
+        this.form.sellingPrice = commodityInfo.sellingPrice / 100.0
+        //处理库存预警展示
+        if (commodityInfo.stockWarn != 0) {
+          this.stockWarnBoolean = true
+        }
+        //处理库存，销量是否展示
+        if (commodityInfo.showStock == '1') {
+          this.form.showStock = true
+        }
+        if (commodityInfo.showSale == '1') {
+          this.form.showSale = true
+        }
+        //处理规格价格数据
+        if (commodityInfo.multiSpec == '1') {
+          this.form.commoditySpecList = []
+          const specList = res.commoditySpecList
+          specList.forEach(spec => {
+            let specItem = {
+              specName: spec.specName,
+              marketPrice: spec.marketPrice / 100.0,
+              charityPrice: spec.charityPrice / 100.0,
+              purchasePrice: spec.purchasePrice / 100.0,
+              sellingPrice: spec.sellingPrice / 100.0,
+              stock: spec.stock
+            }
+            this.form.commoditySpecList.push(specItem)
+          })
+        }
+        //处理分销信息
+        if (commodityInfo.distributed == '1') {
+          const distributeList = res.commodityDistributeList
+          distributeList.forEach(distribute => {
+            if (distribute.grade === 1) {
+              this.form.commissionLevelOne = distribute.commission
+            } else if (distribute.grade === 2) {
+              this.form.commissionLevelTwo = distribute.commission
+            } else if (distribute.grade === 3) {
+              this.form.commissionLevelThree = distribute.commission
+            }
+          })
+        }
+        //处理客服信息
+        this.form.customerSupport = commodityInfo.customerSupportId
+        //处理商家信息
+        let shopList = commodityInfo.shopId
+        this.form.shopId = []
+        let shopIds = shopList.split(',')
+        shopIds.forEach(shopId => {
+          this.form.shopId.push(shopId)
+        })
+        //处理售卖时间
+        let saleDateList = commodityInfo.saleDate
+        this.form.saleDate = []
+        let saleDateRange = saleDateList.split(',')
+        saleDateRange.forEach(saleDate => {
+          this.form.saleDate.push(saleDate)
+        })
+        //初始化上传图片path
+        this.commodityImgOssParam.path =
+          'mall/commodity/' + commodityInfo.commodityId + '/detail'
+        this.shareOssParam.path =
+          'mall/commodity/' + commodityInfo.commodityId + '/share'
+      })
+    },
     toEditCommdity() {
       this.previousStep()
       this.pageType = 'edit'
@@ -1257,10 +1413,12 @@ export default {
       console.log(tab, event)
     },
     generateCommodityId() {
-      commodityId().then(res => {
+      commodityService.commodityId().then(res => {
         this.form.commodityId = res
         this.commodityImgOssParam.path =
-          'mall/commodity/' + this.form.commodityId
+          'mall/commodity/' + this.form.commodityId + '/detail'
+        this.shareOssParam.path =
+          'mall/commodity/' + this.form.commodityId + '/share'
       })
     },
     addShop() {
@@ -1277,7 +1435,7 @@ export default {
       var data = {
         belongType: '0' //TODO 根据角色类型默认选择
       }
-      customerSupportList(data).then(res => {
+      customerSupportService.customerSupportList(data).then(res => {
         res.forEach(item => {
           var cs = {}
           cs.value = item.id
@@ -1308,28 +1466,11 @@ export default {
         stock: 0
       }
       this.form.commoditySpecList.push(specItem)
+      this.$forceUpdate()
     },
     delSpec(index) {
       this.form.commoditySpecList.splice(index, 1)
-    },
-    shopDetail() {
-      //清空遗留数据
-      let shopId = this.$route.query.shopId
-      this.pageLoading = true
-      shopDetail(shopId).then(res => {
-        this.pageLoading = false
-        console.log(res)
-        this.form = res.shopInfo
-        this.form.imgList = res.imgList
-        this.fileList = []
-        res.imgList.forEach(element => {
-          let shopPic = {
-            name: element.imgName,
-            url: this.picPath + element.imgUrl
-          }
-          this.fileList.push(shopPic)
-        })
-      })
+      this.$forceUpdate()
     },
     uploadCommodity() {
       var that = this
@@ -1483,7 +1624,7 @@ export default {
           commodityName: that.form.commodityName,
           commodityType: that.form.commodityType,
           commodityPattern: that.form.commodityPattern,
-          displayImg: that.form.commodityDisplayImg,
+          displayImg: that.form.displayImg,
           saleDate: saleDate,
           marketPrice: marketPrice,
           charityPrice: charityPrice,
@@ -1513,7 +1654,8 @@ export default {
           sharePost: that.form.sharePost,
           purchasePoints: that.form.purchasePoints,
           refundType: that.form.refundType,
-          createBy: that.form.createBy //TODO 上传商品用户ID
+          createBy: that.form.createBy,
+          updateBy: that.form.updateBy
         }
 
         var commoditySpecList = []
@@ -1574,7 +1716,7 @@ export default {
             commoditySpecList: commoditySpecList,
             commodityDistributeList: commodityDistributeList
           }
-          commodityEdit(data).then(res => {
+          commodityService.commodityEdit(data).then(res => {
             that.$message.success('更新商品成功')
             //展示商品二维码
             var canvas = document.getElementById('canvas')
@@ -1597,7 +1739,7 @@ export default {
             commoditySpecList: commoditySpecList,
             commodityDistributeList: commodityDistributeList
           }
-          commodityNew(data).then(res => {
+          commodityService.commodityNew(data).then(res => {
             console.log(res)
             that.$message.success('创建商品成功')
             //展示商品二维码
@@ -1626,7 +1768,7 @@ export default {
         commodityStatus: '1'
       }
       // 提交审核
-      commodityStatusEdit(data).then(res => {
+      commodityService.commodityStatusEdit(data).then(res => {
         that.$message.success('提交审核成功')
         that.checked = true
       })
@@ -1636,9 +1778,10 @@ export default {
       this.pageLoading = false
     },
     handleCommodityImageRemove(file, fileList) {
+      debugger
       var index = 0
       this.form.commodityImgList.forEach(element => {
-        if (element.imgName == file.response.data.fileName) {
+        if (element.imgName == file.name) {
           this.form.commodityImgList.splice(index, 1)
           return
         }
@@ -1655,11 +1798,11 @@ export default {
       this.$refs.commodityImgList.clearValidate()
     },
     handleDisplayRemove(file, fileList) {
-      this.form.commodityDisplayImg = ''
+      this.form.displayImg = ''
     },
     handleDisplaySuccess(response, file, fileList) {
-      this.form.commodityDisplayImg = response.data.relativePath
-      this.$refs.commodityDisplayImg.clearValidate()
+      this.form.displayImg = response.data.relativePath
+      this.$refs.displayImg.clearValidate()
     },
     handleCsWxcodeRemove(file, fileList) {
       this.form.csWxcode = ''

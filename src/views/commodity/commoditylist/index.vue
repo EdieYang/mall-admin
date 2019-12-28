@@ -93,16 +93,17 @@
       </div>
     </template>
     <template>
-      <el-table :data="data" style="width: 100%;">
+      <el-table :data="data" style="width: 100%;" height="700">
         <el-table-column label="商品 " width="600" prop="commodityInfo">
           <template slot-scope="scope">
             <div class="info">
               <div class="info-id">商品ID：{{ scope.row.commodityId }}</div>
               <div class="info-body">
-                <div class="info-left">
-                  <img :src="scope.row.displayImg" class="displayImg" />
-                </div>
-                <div class="info-right">
+                <img
+                  :src="picPath + scope.row.displayImg"
+                  class="info-display"
+                />
+                <div class="info-brief">
                   <div class="info-name">
                     <el-tag type="success" v-if="scope.row.onSale == 1"
                       >售卖中</el-tag
@@ -110,11 +111,26 @@
                     {{ scope.row.commodityName }}
                   </div>
                   <div class="info-tip">
-                    <span class="tip-reco" v-if="scope.row.recommended == 1"
-                      >推荐</span
+                    <el-tag
+                      class="tip-reco"
+                      type="danger"
+                      v-if="scope.row.recommended == '1'"
+                      >推荐</el-tag
                     >
-                    <span class="tip-reco" v-if="scope.row.recommended == 0"
-                      >不推荐</span
+                    <el-tag
+                      class="tip-reco"
+                      type="danger"
+                      v-if="scope.row.recommended == '0'"
+                      >不推荐</el-tag
+                    >
+                    <el-tag v-if="scope.row.commodityPattern == 0"
+                      >线上核销</el-tag
+                    >
+                    <el-tag v-if="scope.row.commodityPattern == 1"
+                      >线下物流</el-tag
+                    >
+                    <el-tag v-if="scope.row.commodityPattern == 2"
+                      >线下物流+自提</el-tag
                     >
                   </div>
                 </div>
@@ -130,7 +146,7 @@
           prop="browserAmount"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.mobile }}</span>
+            <span>{{ scope.row.browserAmount }}</span>
           </template>
         </el-table-column>
 
@@ -141,7 +157,7 @@
           prop="saleAmount"
         >
           <template slot-scope="scope">
-            <span>{{ scope.row.addressDetail }}</span>
+            <span>{{ scope.row.saleAmount }}</span>
           </template>
         </el-table-column>
 
@@ -153,7 +169,7 @@
 
         <el-table-column label="成交额" align="center" width="140">
           <template slot-scope="scope">
-            <span>{{ scope.row.saleAmount }}</span>
+            <span>{{ scope.row.turnover }}</span>
           </template>
         </el-table-column>
 
@@ -166,66 +182,66 @@
         <el-table-column
           label="商品状态"
           align="center"
-          width="140"
+          width="120"
+          fixed="right"
           prop="commodityStatus"
         >
           <template slot-scope="scope">
-            <el-tag type="danger" v-if="scope.row.commodityStatus == 0"
-              >停运</el-tag
+            <el-tag
+              type="danger"
+              v-if="scope.row.commodityStatus == 0"
+              effect="dark"
+              >下架</el-tag
             >
-            <el-tag type="success" v-if="scope.row.commodityStatus == 1"
-              >运营中</el-tag
+            <el-tag
+              type="warning"
+              v-if="scope.row.commodityStatus == 1"
+              effect="dark"
+              >待审核</el-tag
+            >
+            <el-tag
+              type="primary"
+              v-if="scope.row.commodityStatus == 2"
+              effect="dark"
+              >审核通过</el-tag
+            >
+            <el-tag
+              type="danger"
+              v-if="scope.row.commodityStatus == 3"
+              effect="dark"
+              >上架</el-tag
             >
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" align="center" width="280" fixed="right">
+        <el-table-column label="操作" align="center" width="180" fixed="right">
           <template slot-scope="scope">
-            <el-tooltip content="编辑商铺" placement="top-start" effect="light">
+            <el-tooltip content="编辑商品" placement="top-start" effect="light">
               <el-button
-                type="primary"
                 icon="el-icon-edit"
                 circle
-                @click="edit(scope.row.shopId)"
+                @click="edit(scope.row.commodityId)"
               ></el-button>
             </el-tooltip>
             <el-tooltip
-              content="编辑店员"
+              content="订单"
               placement="top-start"
               circle
               effect="light"
             >
               <el-button
                 type="primary"
-                icon="el-icon-user"
+                icon="el-icon-s-order"
                 circle
-                @click="switchline(scope.row.shopId, '3')"
+                @click="order(scope.row.commodityId)"
               ></el-button>
             </el-tooltip>
-            <el-tooltip
-              content="激活"
-              placement="top-start"
-              effect="light"
-              v-if="scope.row.shopStatus === '0'"
-            >
+            <el-tooltip content="复制" placement="top-start" effect="light">
               <el-button
                 type="danger"
-                icon="el-icon-video-pause"
+                icon="el-icon-s-help"
                 circle
-                @click="run(scope.row.shopId, '1')"
-              ></el-button>
-            </el-tooltip>
-            <el-tooltip
-              content="停止"
-              placement="top-start"
-              effect="light"
-              v-if="scope.row.shopStatus === '1'"
-            >
-              <el-button
-                type="danger"
-                icon="el-icon-video-play"
-                circle
-                @click="run(scope.row.shopId, '0')"
+                @click="copy(scope.row.commodityId)"
               ></el-button>
             </el-tooltip>
           </template>
@@ -248,7 +264,7 @@
 </template>
 
 <script>
-import { shopList, shopEdit } from '@/api/shop/shopApi'
+import * as commodityService from '@/api/commodity/commodity'
 import util from '@/libs/util'
 var pageNum = 1
 var pageSize = 10
@@ -261,7 +277,7 @@ export default {
       data: [],
       currentPage: 1,
       total: 0,
-      picPath: 'https://pic.linchongpets.com/',
+      picPath: util.picturePath,
       formInline: {
         shopId: '',
         shopName: ''
@@ -311,7 +327,7 @@ export default {
         pageNum: pageNum,
         pageSize: pageSize
       }
-      shopList(data).then(res => {
+      commodityService.commodityPage(data).then(res => {
         console.log(res)
         this.data = res.list
         this.currentPage = res.pageNum
@@ -321,22 +337,22 @@ export default {
     newCommodity() {
       this.$router.push({ path: '/commodity/index', query: { type: 'new' } })
     },
-    edit(shopId) {
+    edit(commodityId) {
       this.$router.push({
-        path: '/shop/new',
-        query: { shopId: shopId, type: 'edit' }
+        path: '/commodity/index',
+        query: { commodityId: commodityId, type: 'edit' }
       })
     },
     handleSizeChange(val) {
       pageSize = val
-      this.getList()
+      this.getCommodityList()
     },
     handleCurrentChange(val) {
       pageNum = val
-      this.getList()
+      this.getCommodityList()
     },
     search() {
-      this.getList()
+      this.getCommodityList()
     },
     run(shopId, shopStatus) {
       var formData = {
@@ -344,13 +360,13 @@ export default {
         shopStatus: shopStatus
       }
       shopEdit(formData).then(res => {
-        this.getList()
+        this.getCommodityList()
       })
     },
     reset() {
       this.formInline.shopId = ''
       this.formInline.shopName = ''
-      this.getList()
+      this.getCommodityList()
     }
   }
 }
@@ -362,5 +378,43 @@ export default {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+}
+.info {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.info-id {
+  font-size: 13px;
+}
+.info-body {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  margin-top: 10px;
+}
+.info-display {
+  width: 100px;
+  height: 100px;
+  border-radius: 5px;
+}
+.info-brief {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin-left: 10px;
+}
+.info-name {
+  font-size: 16px;
+  color: #2d2d2d;
+}
+.info-tip {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+.tip-reco {
+  margin-right: 10px;
 }
 </style>
