@@ -16,9 +16,6 @@ import sha256 from 'js-sha256'
 import moment from 'moment'
 // 菜单和路由设置
 import router from './router'
-import menuHeader from '@/menu/header'
-import menuAside from '@/menu/aside'
-import { frameInRoutes } from '@/router/routes'
 import VueUeditorWrap from 'vue-ueditor-wrap'
 
 // 核心插件

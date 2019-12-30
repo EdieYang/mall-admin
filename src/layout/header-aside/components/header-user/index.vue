@@ -11,35 +11,35 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex'
-import util from '@/libs/util.js'
+import { mapState, mapActions } from "vuex"
+import util from "@/libs/util.js"
 export default {
   data() {
     return {
-      userName: ''
+      userName: ""
     }
   },
   computed: {
-    ...mapState('d2admin/user', ['info'])
+    ...mapState("d2admin/user", ["info"])
   },
   mounted() {
     this.getUserName()
   },
   methods: {
-    ...mapActions('d2admin/account', ['logout']),
+    ...mapActions("d2admin/account", ["logout"]),
     getUserName() {
-      const userName = util.cookies.get('userName')
+      const userName = util.cookies.get("userName")
       this.userName = userName
     },
     /**
      * @description 登出
      */
     logout() {
-      util.cookies.set('userId', '')
-      util.cookies.set('userName', '')
-      util.cookies.set('token', '')
+      util.cookies.remove("userId")
+      util.cookies.remove("userName")
+      util.cookies.remove("token")
       this.$router.push({
-        name: 'login'
+        name: "login"
       })
     }
   }
